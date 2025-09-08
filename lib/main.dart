@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flutter/services.dart'; // добавлено для RawKeyboardListener и LogicalKeyboardKey
 
 void main() {
   runApp(const TableTennisScoreApp());
@@ -89,6 +90,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
   final ScrollController goalsController = ScrollController();
   final ScrollController gamesController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
 
   int servingPlayer = 1;
   int serveCount = 0;
@@ -179,7 +181,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
       final tmp = selectedPlayer1;
       selectedPlayer1 = selectedPlayer2;
       selectedPlayer2 = tmp;
-      // Меняем номера подающего
+      // Мен��ем номера подающего
       servingPlayer = 1;
       serveCount = 0;
       // Меняем счет местами
@@ -224,6 +226,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
   void dispose() {
     goalsController.dispose();
     gamesController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -237,162 +240,164 @@ class _ScoreScreenState extends State<ScoreScreen> {
     final rightScore = player2Score;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Счет настольного тенниса'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Режим перехода подачи: '),
-              DropdownButton<int>(
-                value: serveSwitchMode,
-                items: const [
-                  DropdownMenuItem(value: 5, child: Text('Через 5 ходов')),
-                  DropdownMenuItem(value: 2, child: Text('Через 2 хода')),
-                ],
-                onChanged: totalScore == 0 ? (v) => setState(() => serveSwitchMode = v!) : null,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('Игрок 1: '),
-              DropdownButton<String>(
-                value: selectedPlayer1,
-                items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
-                onChanged: (v) {
-                  if (v == selectedPlayer2 || totalScore > 5) return;
-                  setState(() => selectedPlayer1 = v);
-                },
-              ),
-              const SizedBox(width: 24),
-              const Text('Игрок 2: '),
-              DropdownButton<String>(
-                value: selectedPlayer2,
-                items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
-                onChanged: (v) {
-                  if (v == selectedPlayer1 || totalScore > 5) return;
-                  setState(() => selectedPlayer2 = v);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              scoreBox(leftPlayer ?? 'Игрок 1', leftScore, onAddGoal: canPlay ? () => addGoalToPlayer(1) : null),
-              scoreBox(rightPlayer ?? 'Игрок 2', rightScore, onAddGoal: canPlay ? () => addGoalToPlayer(2) : null),
-            ],
-          ),
-          if (!canPlay)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Добавьте минимум двух игроков и выберите разных игроков для партии!', style: TextStyle(color: Colors.red)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text('Матч по'),
+            const SizedBox(width: 16),
+            DropdownButton<int>(
+              value: serveSwitchMode,
+              items: const [
+                DropdownMenuItem(value: 5, child: Text('Через 5 ходов')),
+                DropdownMenuItem(value: 2, child: Text('Через 2 хода')),
+              ],
+              onChanged: totalScore == 0 ? (v) => setState(() => serveSwitchMode = v!) : null,
             ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: saveCurrentGame,
-            child: const Text('Сохранить партию'),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: scoreLog.isEmpty
-                ? const Text('Нет забитых голов')
-                : ListView.builder(
-                    controller: goalsController,
-                    reverse: true,
-                    itemCount: scoreLog.length,
-                    itemBuilder: (context, index) {
-                      final entry = scoreLog[index];
-                      final name = entry.player == 1 ? selectedPlayer1 : selectedPlayer2;
-                      return ListTile(
-                        title: Text('Гол: $name'),
-                        subtitle: Text(entry.timestamp.toLocal().toString().split('.')[0]),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => deleteLogEntry(index),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: sessionGames.isEmpty
-                ? const Text('Нет сохранённых партий')
-                : ListView.builder(
-                    controller: gamesController,
-                    itemCount: sessionGames.length,
-                    itemBuilder: (context, index) {
-                      final game = sessionGames[index];
-                      final p1 = game.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
-                      final p2 = game.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
-                      return ListTile(
-                        title: Text('Партия ${index + 1}: ${selectedPlayer1 ?? 'Игрок 1'} - $p1, ${selectedPlayer2 ?? 'Игрок 2'} - $p2'),
-                        subtitle: Text('Голов: ${game.length}'),
-                      );
-                    },
-                  ),
-          ),
-        ],
+          ],
+        ),
+      ),
+      body: RawKeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKey: (event) {
+          if (event is RawKeyDownEvent) {
+            if (event.isControlPressed || event.logicalKey == LogicalKeyboardKey.space) {
+              if (canPlay) addGoalToPlayer(1);
+            } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+              if (canPlay) addGoalToPlayer(2);
+            }
+          }
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Игрок 1: '),
+                DropdownButton<String>(
+                  value: selectedPlayer1,
+                  items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                  onChanged: (v) {
+                    if (v == selectedPlayer2 || totalScore > 5) return;
+                    setState(() => selectedPlayer1 = v);
+                  },
+                ),
+                const SizedBox(width: 16),
+                const Text('Игрок 2: '),
+                DropdownButton<String>(
+                  value: selectedPlayer2,
+                  items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                  onChanged: (v) {
+                    if (v == selectedPlayer1 || totalScore > 5) return;
+                    setState(() => selectedPlayer2 = v);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 8), // уменьшено
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                scoreBox(leftPlayer ?? 'Игрок 1', leftScore, onAddGoal: canPlay ? () => addGoalToPlayer(1) : null),
+                scoreBox(rightPlayer ?? 'Игрок 2', rightScore, onAddGoal: canPlay ? () => addGoalToPlayer(2) : null),
+              ],
+            ),
+            if (!canPlay)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Добавьте минимум двух игроков и выберите разных игроков для партии!', style: TextStyle(color: Colors.red)),
+              ),
+            const SizedBox(height: 8), // уменьшено
+            ElevatedButton(
+              onPressed: saveCurrentGame,
+              child: const Text('Сохранить партию'),
+            ),
+            const SizedBox(height: 8), // уменьшено
+            Expanded(
+              child: scoreLog.isEmpty
+                  ? const Text('Нет забитых голов')
+                  : ListView.builder(
+                      controller: goalsController,
+                      reverse: true,
+                      itemCount: scoreLog.length,
+                      itemBuilder: (context, index) {
+                        final entry = scoreLog[index];
+                        final name = entry.player == 1 ? selectedPlayer1 : selectedPlayer2;
+                        return ListTile(
+                          title: Text('Гол: $name'),
+                          subtitle: Text(entry.timestamp.toLocal().toString().split('.')[0]),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => deleteLogEntry(index),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: sessionGames.isEmpty
+                  ? const Text('Нет сохранённых партий')
+                  : ListView.builder(
+                      controller: gamesController,
+                      itemCount: sessionGames.length,
+                      itemBuilder: (context, index) {
+                        final game = sessionGames[index];
+                        final p1 = game.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
+                        final p2 = game.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
+                        return ListTile(
+                          title: Text('Партия ${index + 1}: ${selectedPlayer1 ?? 'Игрок 1'} - $p1, ${selectedPlayer2 ?? 'Игрок 2'} - $p2'),
+                          subtitle: Text('Голов: ${game.length}'),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget scoreBox(String name, int score, {VoidCallback? onAddGoal}) {
-    return Container(
-      width: 120,
-      height: 120,
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey, width: 2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            name,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+    return Column(
+      children: [
+        Container(
+          width: 120,
+          height: 120,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.grey, width: 2),
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(height: 4),
-          Expanded(
-            child: Center(
-              child: Text(
-                '$score',
-                style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, letterSpacing: -2),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+          child: Center(
+            child: Text(
+              '$score',
+              style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, letterSpacing: -2),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          SizedBox(
-            width: 80,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: onAddGoal,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                textStyle: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              child: const Text('+'),
+        ),
+        SizedBox(
+          width: 120,
+          height: 60,
+          child: ElevatedButton(
+            onPressed: onAddGoal,
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              textStyle: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
             ),
+            child: const Text('+'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
