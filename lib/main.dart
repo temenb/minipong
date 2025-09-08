@@ -173,6 +173,32 @@ class _ScoreScreenState extends State<ScoreScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Игрок 1: '),
+              DropdownButton<String>(
+                value: selectedPlayer1,
+                items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                onChanged: (v) {
+                  if (v == selectedPlayer2 || (player1Score + player2Score) > 5) return;
+                  setState(() => selectedPlayer1 = v);
+                },
+              ),
+              const SizedBox(width: 24),
+              const Text('Игрок 2: '),
+              DropdownButton<String>(
+                value: selectedPlayer2,
+                items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+                onChanged: (v) {
+                  if (v == selectedPlayer1 || (player1Score + player2Score) > 5) return;
+                  setState(() => selectedPlayer2 = v);
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -180,7 +206,6 @@ class _ScoreScreenState extends State<ScoreScreen> {
               scoreColumn(selectedPlayer2 ?? 'Игрок 2', player2Score),
             ],
           ),
-          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -190,7 +215,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                     scoreLog.add(ScoreLogEntry(1, 1));
                   });
                 } : null,
-                child: Text('Добавить гол (${selectedPlayer1 ?? "Игрок 1"})'),
+                child: Text('+'),
               ),
               const SizedBox(width: 24),
               ElevatedButton(
@@ -199,7 +224,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                     scoreLog.add(ScoreLogEntry(2, 1));
                   });
                 } : null,
-                child: Text('Добавить гол (${selectedPlayer2 ?? "Игрок 2"})'),
+                child: Text('+'),
               ),
             ],
           ),
@@ -259,7 +284,6 @@ class _ScoreScreenState extends State<ScoreScreen> {
   Widget scoreColumn(String name, int score) {
     return Column(
       children: [
-        Text(name, style: const TextStyle(fontSize: 20)),
         Text('$score', style: const TextStyle(fontSize: 48)),
       ],
     );
