@@ -81,13 +81,22 @@ class ScoreLogEntry {
 class _ScoreScreenState extends State<ScoreScreen> {
   List<ScoreLogEntry> scoreLog = [];
   List<List<ScoreLogEntry>> savedGames = [];
+  List<List<ScoreLogEntry>> sessionGames = [];
   List<String> players = [];
   String? selectedPlayer1;
   String? selectedPlayer2;
   String? goalTarget; // '1' или '2'
 
+  final ScrollController goalsController = ScrollController();
+  final ScrollController gamesController = ScrollController();
+
+  int servingPlayer = 1;
+  int serveCount = 0;
+  int serveSwitchMode = 5; // 2 или 5
+
   int get player1Score => scoreLog.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
   int get player2Score => scoreLog.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
+  int get totalScore => player1Score + player2Score;
 
   @override
   void initState() {
@@ -121,6 +130,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
         final list = jsonDecode(game) as List;
         return list.map((e) => ScoreLogEntry(e['player'], e['delta'], DateTime.parse(e['timestamp']))).toList();
       }).toList();
+      // sessionGames пустой при запуске
+      sessionGames = [];
     });
   }
 
@@ -136,20 +147,70 @@ class _ScoreScreenState extends State<ScoreScreen> {
     await prefs.setStringList('savedGames', gamesJson);
     setState(() {
       savedGames.add(List<ScoreLogEntry>.from(scoreLog));
+      sessionGames.add(List<ScoreLogEntry>.from(scoreLog));
       scoreLog.clear();
+      servingPlayer = 1;
+      serveCount = 0;
+      // режим не сбрасываем, остается выбранным
     });
+    // Прокрутка списка игр вниз
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (gamesController.hasClients) {
+      gamesController.animateTo(
+        gamesController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   void reset() {
     setState(() {
       scoreLog.clear();
+      servingPlayer = 1;
+      serveCount = 0;
+      // режим не сбрасываем, остается выбранным
     });
   }
 
-  void addGoal() {
-    if (goalTarget == null) return;
+  void swapPlayers() {
     setState(() {
-      scoreLog.add(ScoreLogEntry(goalTarget == '1' ? 1 : 2, 1));
+      // Меняем местами выбранных игроков
+      final tmp = selectedPlayer1;
+      selectedPlayer1 = selectedPlayer2;
+      selectedPlayer2 = tmp;
+      // Меняем номера подающего
+      servingPlayer = 1;
+      serveCount = 0;
+      // Меняем счет местами
+      scoreLog = scoreLog.map((entry) {
+        if (entry.player == 1) {
+          return ScoreLogEntry(2, entry.delta, entry.timestamp);
+        } else if (entry.player == 2) {
+          return ScoreLogEntry(1, entry.delta, entry.timestamp);
+        }
+        return entry;
+      }).toList();
+    });
+  }
+
+  void addGoalToPlayer(int playerNum) {
+    setState(() {
+      scoreLog.add(ScoreLogEntry(playerNum, 1));
+      serveCount++;
+      if (serveCount >= serveSwitchMode) {
+        swapPlayers();
+      }
+    });
+    // Прокрутка списка голов вниз
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (goalsController.hasClients) {
+        goalsController.animateTo(
+          goalsController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
@@ -160,8 +221,20 @@ class _ScoreScreenState extends State<ScoreScreen> {
   }
 
   @override
+  void dispose() {
+    goalsController.dispose();
+    gamesController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final canPlay = players.length >= 2 && selectedPlayer1 != null && selectedPlayer2 != null && selectedPlayer1 != selectedPlayer2;
+    // Определяем, какой игрок сейчас подает (всегда слева)
+    final leftPlayer = selectedPlayer1;
+    final rightPlayer = selectedPlayer2;
+    final leftScore = player1Score;
+    final rightScore = player2Score;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Счет настольного тенниса'),
@@ -173,6 +246,20 @@ class _ScoreScreenState extends State<ScoreScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Режим перехода подачи: '),
+              DropdownButton<int>(
+                value: serveSwitchMode,
+                items: const [
+                  DropdownMenuItem(value: 5, child: Text('Через 5 ходов')),
+                  DropdownMenuItem(value: 2, child: Text('Через 2 хода')),
+                ],
+                onChanged: totalScore == 0 ? (v) => setState(() => serveSwitchMode = v!) : null,
+              ),
+            ],
+          ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +269,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 value: selectedPlayer1,
                 items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
                 onChanged: (v) {
-                  if (v == selectedPlayer2 || (player1Score + player2Score) > 5) return;
+                  if (v == selectedPlayer2 || totalScore > 5) return;
                   setState(() => selectedPlayer1 = v);
                 },
               ),
@@ -192,7 +279,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 value: selectedPlayer2,
                 items: players.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
                 onChanged: (v) {
-                  if (v == selectedPlayer1 || (player1Score + player2Score) > 5) return;
+                  if (v == selectedPlayer1 || totalScore > 5) return;
                   setState(() => selectedPlayer2 = v);
                 },
               ),
@@ -202,30 +289,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              scoreColumn(selectedPlayer1 ?? 'Игрок 1', player1Score),
-              scoreColumn(selectedPlayer2 ?? 'Игрок 2', player2Score),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: canPlay ? () {
-                  setState(() {
-                    scoreLog.add(ScoreLogEntry(1, 1));
-                  });
-                } : null,
-                child: Text('+'),
-              ),
-              const SizedBox(width: 24),
-              ElevatedButton(
-                onPressed: canPlay ? () {
-                  setState(() {
-                    scoreLog.add(ScoreLogEntry(2, 1));
-                  });
-                } : null,
-                child: Text('+'),
-              ),
+              scoreBox(leftPlayer ?? 'Игрок 1', leftScore, onAddGoal: canPlay ? () => addGoalToPlayer(1) : null),
+              scoreBox(rightPlayer ?? 'Игрок 2', rightScore, onAddGoal: canPlay ? () => addGoalToPlayer(2) : null),
             ],
           ),
           if (!canPlay)
@@ -243,6 +308,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
             child: scoreLog.isEmpty
                 ? const Text('Нет забитых голов')
                 : ListView.builder(
+                    controller: goalsController,
                     reverse: true,
                     itemCount: scoreLog.length,
                     itemBuilder: (context, index) {
@@ -261,12 +327,13 @@ class _ScoreScreenState extends State<ScoreScreen> {
           ),
           const SizedBox(height: 20),
           Expanded(
-            child: savedGames.isEmpty
+            child: sessionGames.isEmpty
                 ? const Text('Нет сохранённых партий')
                 : ListView.builder(
-                    itemCount: savedGames.length,
+                    controller: gamesController,
+                    itemCount: sessionGames.length,
                     itemBuilder: (context, index) {
-                      final game = savedGames[index];
+                      final game = sessionGames[index];
                       final p1 = game.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
                       final p2 = game.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
                       return ListTile(
@@ -281,11 +348,51 @@ class _ScoreScreenState extends State<ScoreScreen> {
     );
   }
 
-  Widget scoreColumn(String name, int score) {
-    return Column(
-      children: [
-        Text('$score', style: const TextStyle(fontSize: 48)),
-      ],
+  Widget scoreBox(String name, int score, {VoidCallback? onAddGoal}) {
+    return Container(
+      width: 120,
+      height: 120,
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey, width: 2),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            name,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: Center(
+              child: Text(
+                '$score',
+                style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, letterSpacing: -2),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 80,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: onAddGoal,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                textStyle: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+              child: const Text('+'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
