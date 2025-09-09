@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:minipong/player_repository.dart';
 
 class ScoreLogEntry {
   final int player;
@@ -108,4 +109,8 @@ class GameState {
       scoreLog.removeAt(index);
     }
   }
+
+  final PlayerRepository playerRepository = PlayerRepository.instance;
+
+  List<String> get activePlayerNames => playerRepository.activePlayerNames;
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app.dart';
+import 'package:minipong/app.dart';
 
 void main() {
   runApp(const TableTennisScoreApp());

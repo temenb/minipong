@@ -1,3 +1,4 @@
+import 'package:minipong/player_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Player {
@@ -55,4 +56,7 @@ class PlayerRepository {
     }
     await saveAllPlayers(_players);
   }
+
+  List<String> get activePlayerNames =>
+      _players.where((p) => p.isActive).map((p) => p.name).toList();
 }

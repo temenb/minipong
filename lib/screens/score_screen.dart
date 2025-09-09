@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/score_limit_dropdown.dart';
-import '../game_state.dart';
-import '../widgets/player_score_widget.dart';
+import 'package:minipong/player_repository.dart';
+import 'package:minipong/widgets/score_limit_dropdown.dart';
+import 'package:minipong/game_state.dart';
+import 'package:minipong/widgets/player_score_widget.dart';
 
 class ScoreScreen extends StatefulWidget {
   const ScoreScreen({super.key});
@@ -35,11 +36,13 @@ class _ScoreScreenState extends State<ScoreScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             PlayerScoreWidget(
-              playerNames: gameState.players,
+              playerNames: gameState.activePlayerNames,
               selectedPlayerIndex: 0,
               onPlayerChanged: (index) {
-                gameState.setSelectedPlayer1(gameState.players[index]);
-                setState(() {});
+                if (gameState.activePlayerNames.isNotEmpty) {
+                  gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
+                  setState(() {});
+                }
               },
               score: gameState.player1Score,
               onAddScore: () {
@@ -49,11 +52,13 @@ class _ScoreScreenState extends State<ScoreScreen> {
             ),
             const SizedBox(width: 32),
             PlayerScoreWidget(
-              playerNames: gameState.players,
+              playerNames: gameState.activePlayerNames,
               selectedPlayerIndex: 1,
               onPlayerChanged: (index) {
-                gameState.setSelectedPlayer2(gameState.players[index]);
-                setState(() {});
+                if (gameState.activePlayerNames.length > 1) {
+                  gameState.setSelectedPlayer2(gameState.activePlayerNames[index]);
+                  setState(() {});
+                }
               },
               score: gameState.player2Score,
               onAddScore: () {

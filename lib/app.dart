@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/score_screen.dart';
-import 'screens/players_screen.dart';
-
+import 'package:minipong/screens/score_screen.dart';
+import 'package:minipong/screens/players_screen.dart';
 class TableTennisScoreApp extends StatelessWidget {
   const TableTennisScoreApp({super.key});
 
