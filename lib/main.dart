@@ -89,10 +89,12 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
   Future<void> _loadPlayers() async {
     allPlayers = await repository.loadAllPlayers();
-    // Если в геймстейте нет игроков, и есть хотя бы два активных игрока, инициализируем их
-    if (game.players.isEmpty && allPlayers.where((p) => p.isActive).length >= 2) {
-      final active = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
+    // Не инициализируем game.players, если нет двух активных игроков
+    final active = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
+    if (active.length >= 2) {
       game.players = [active[0], active[1]];
+    } else {
+      game.players = [];
     }
     setState(() {});
   }
@@ -120,6 +122,22 @@ class _ScoreScreenState extends State<ScoreScreen> {
   @override
   Widget build(BuildContext context) {
     final activePlayers = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
+
+    // Если активных игроков меньше двух, показываем только сообщение
+    if (activePlayers.length < 2) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text('Матч по'),
+        ),
+        body: const Center(
+          child: Text('Добавьте минимум двух игроков!', style: TextStyle(fontSize: 32, color: Colors.red)),
+        ),
+      );
+    }
 
     // Для второго дропдауна исключаем выбранного первого игрока
     final secOptions = activePlayers.where((name) => name != game.players[game.firPlayer]).toList();
@@ -495,9 +513,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 return CheckboxListTile(
                   title: Text(player.name),
                   value: player.isActive,
-                  onChanged: (val) async {
-                    await repository.setPlayerActive(player.name, val ?? true);
-                    await _loadPlayers();
+                  onChanged: (val) {
+                    setState(() {
+                      player.isActive = val ?? false;
+                    });
                   },
                 );
               },
