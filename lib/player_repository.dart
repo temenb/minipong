@@ -28,7 +28,7 @@ class PlayerRepository {
     }
     _players.clear();
     if (names != null) {
-      _players.addAll(names.map((name) => Player(name, isActive: false)));
+      _players.addAll(names.map((name) => Player(name, isActive: true)));
     }
     return List<Player>.from(_players);
   }

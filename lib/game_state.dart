@@ -140,7 +140,11 @@ class GameState {
   void reset() {
     scoreLog.clear();
     _selectedScore = 0;
-    // Optionally reset other fields if needed
+    // Заполняем players первыми двумя активными игроками
+    final active = playerRepository.activePlayerNames;
+    players = [];
+    if (active.isNotEmpty) players.add(active[0]);
+    if (active.length > 1) players.add(active[1]);
   }
 
   final PlayerRepository playerRepository = PlayerRepository.instance;
