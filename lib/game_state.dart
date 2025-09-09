@@ -135,7 +135,7 @@ class GameState {
 
   void addGoalToPlayer(int playerNum) {
     final now = DateTime.now();
-    if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 3000) {
+    if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 2000) {
       return;
     }
     _lastGoalTime = now;

@@ -16,6 +16,32 @@ class ScoreScreen extends StatefulWidget {
 class _ScoreScreenState extends State<ScoreScreen> {
   final GameState gameState = GameState.instance;
 
+  void _saveGameAndSwitchPlayers() async {
+    await gameState.saveCurrentGame();
+    // Определяем победителя и проигравшего
+    int p1Score = gameState.player1Score;
+    int p2Score = gameState.player2Score;
+    int winnerIdx = p1Score > p2Score ? 0 : 1;
+    int loserIdx = p1Score > p2Score ? 1 : 0;
+    // Победитель
+    String winner = gameState.players[winnerIdx];
+    // Проигравший
+    String loser = gameState.players[loserIdx];
+    // Победитель становится первым
+    gameState.players[0] = winner;
+    // Проигравший становится вторым или следующим
+    if (gameState.players.length > 2) {
+      // Найти следующего игрока (если есть)
+      int nextIdx = 2;
+      String nextPlayer = gameState.players[nextIdx];
+      gameState.players[1] = nextPlayer;
+      // Проигравший уходит в конец
+      gameState.players.removeAt(loserIdx);
+      gameState.players.add(loser);
+    } else {
+      gameState.players[1] = loser;
+    }
+    setState(() {});
   @override
   Widget build(BuildContext context) {
     if (gameState.activePlayerNames.length < 2) {
