@@ -158,11 +158,29 @@ class _ScoreScreenState extends State<ScoreScreen> {
               if (canPlay) {
                 game.addGoalToPlayer(1);
                 setState(() {});
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_scoreScrollController.hasClients) {
+                    _scoreScrollController.animateTo(
+                      _scoreScrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                });
               }
             } else if (event.logicalKey == LogicalKeyboardKey.enter) {
               if (canPlay) {
                 game.addGoalToPlayer(2);
                 setState(() {});
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_scoreScrollController.hasClients) {
+                    _scoreScrollController.animateTo(
+                      _scoreScrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                });
               }
             }
           }
