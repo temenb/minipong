@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class PlayerScoreWidget extends StatelessWidget {
   final List<String> playerNames;
-  final int selectedPlayerIndex;
+  final int? selectedPlayerIndex;
   final ValueChanged<int> onPlayerChanged;
   final int score;
   final VoidCallback onAddScore;

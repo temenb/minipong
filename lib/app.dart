@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minipong/screens/players_screen.dart';
 import 'package:minipong/screens/score_screen.dart';
+import 'package:minipong/game_state.dart';
 
 class TableTennisScoreApp extends StatelessWidget {
   const TableTennisScoreApp({super.key});
@@ -37,6 +38,7 @@ class HomeScreen extends StatelessWidget {
                 textStyle: const TextStyle(fontSize: 32),
               ),
               onPressed: () {
+                GameState.instance.reset();
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const ScoreScreen()),
                 );

@@ -137,6 +137,12 @@ class GameState {
     }
   }
 
+  void reset() {
+    scoreLog.clear();
+    _selectedScore = 0;
+    // Optionally reset other fields if needed
+  }
+
   final PlayerRepository playerRepository = PlayerRepository.instance;
 
   List<String> get activePlayerNames => playerRepository.activePlayerNames;

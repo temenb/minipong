@@ -17,6 +17,21 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (gameState.activePlayerNames.length < 2) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Счет'),
+        ),
+        body: const Center(
+          child: Text(
+            'добавьте минимум двух игроков',
+            style: TextStyle(fontSize: 24, color: Colors.red),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -42,7 +57,12 @@ class _ScoreScreenState extends State<ScoreScreen> {
             children: [
               PlayerScoreWidget(
                 playerNames: gameState.activePlayerNames,
-                selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players.isNotEmpty ? gameState.players[gameState.firPlayer] : ''),
+                selectedPlayerIndex: (() {
+                  final idx = gameState.activePlayerNames.indexOf(
+                    gameState.players.isNotEmpty ? gameState.players[gameState.firPlayer] : ''
+                  );
+                  return idx >= 0 ? idx : null;
+                })(),
                 onPlayerChanged: (index) {
                   if (gameState.activePlayerNames.isNotEmpty) {
                     gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
@@ -89,7 +109,12 @@ class _ScoreScreenState extends State<ScoreScreen> {
               ),
               PlayerScoreWidget(
                 playerNames: gameState.activePlayerNames,
-                selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players.length > 1 ? gameState.players[gameState.secPlayer] : ''),
+                selectedPlayerIndex: (() {
+                  final idx = gameState.activePlayerNames.indexOf(
+                    gameState.players.length > 1 ? gameState.players[gameState.secPlayer] : ''
+                  );
+                  return idx >= 0 ? idx : null;
+                })(),
                 onPlayerChanged: (index) {
                   if (gameState.activePlayerNames.length > 1) {
                     gameState.setSelectedPlayer2(gameState.activePlayerNames[index]);
