@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:minipong/player_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -129,8 +130,21 @@ class GameState {
     scoreLog.clear();
   }
 
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  DateTime? _lastGoalTime;
+
   void addGoalToPlayer(int playerNum) {
+    final now = DateTime.now();
+    if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 3000) {
+      return;
+    }
+    _lastGoalTime = now;
     scoreLog.add(ScoreLogEntry(playerNum, 1));
+    if (playerNum == 1) {
+      _audioPlayer.play(AssetSource('audio/ping1.mp3'));
+    } else if (playerNum == 2) {
+      _audioPlayer.play(AssetSource('audio/ping2.mp3'));
+    }
   }
 
   void deleteLogEntry(int index) {
