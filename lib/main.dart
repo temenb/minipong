@@ -108,9 +108,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
   @override
   Widget build(BuildContext context) {
     final canPlay = game.players.length >= 2 &&
-        game.selectedPlayer1 != null &&
-        game.selectedPlayer2 != null &&
-        game.selectedPlayer1 != game.selectedPlayer2;
+        game.players[0].isNotEmpty &&
+        game.players[1].isNotEmpty &&
+        game.players[0] != game.players[1];
 
     return Scaffold(
       appBar: AppBar(
@@ -166,9 +166,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Левая сторона: firPlayer
                 Column(
                   children: [
-                    Text('Игрок ${game.firPlayer}:'),
+                    Text('Игрок ${game.firPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: game.firPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2,
+                      value: game.players.length > game.firPlayer ? game.players[game.firPlayer] : null,
                       items: game.players.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
@@ -177,11 +177,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          if (game.firPlayer == 1) {
-                            game.setSelectedPlayer1(value!);
-                          } else {
-                            game.setSelectedPlayer2(value!);
-                          }
+                          if (game.players.length > game.firPlayer) game.players[game.firPlayer] = value!;
                         });
                       },
                     ),
@@ -204,9 +200,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Правая сторона: secPlayer
                 Column(
                   children: [
-                    Text('Игрок ${game.secPlayer}:'),
+                    Text('Игрок ${game.secPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: game.secPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2,
+                      value: game.players.length > game.secPlayer ? game.players[game.secPlayer] : null,
                       items: game.players.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
@@ -215,11 +211,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          if (game.secPlayer == 1) {
-                            game.setSelectedPlayer1(value!);
-                          } else {
-                            game.setSelectedPlayer2(value!);
-                          }
+                          if (game.players.length > game.secPlayer) game.players[game.secPlayer] = value!;
                         });
                       },
                     ),
@@ -231,23 +223,23 @@ class _ScoreScreenState extends State<ScoreScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Левая кнопка и табло: firPlayer/greenPlayer
+                // Табло и кнопка для firPlayer
                 scoreBox(
-                  (game.greenPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2) ?? 'Игрок',
-                  game.greenPlayer == 1 ? game.player1Score : game.player2Score,
+                  game.players.length > game.firPlayer ? game.players[game.firPlayer] : 'Игрок',
+                  game.firPlayer == 0 ? game.player1Score : game.player2Score,
                   onAddGoal: canPlay ? () {
-                    _addGoalAndScroll(game.greenPlayer);
+                    _addGoalAndScroll(game.firPlayer + 1);
                   } : null,
-                  color: Colors.green,
+                  color: game.greenPlayer == game.firPlayer ? Colors.green : Colors.pink,
                 ),
-                // Правая кнопка и табло: pinkPlayer/secPlayer
+                // Табло и кнопка для secPlayer
                 scoreBox(
-                  (game.pinkPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2) ?? 'Игрок',
-                  game.pinkPlayer == 1 ? game.player1Score : game.player2Score,
+                  game.players.length > game.secPlayer ? game.players[game.secPlayer] : 'Игрок',
+                  game.secPlayer == 0 ? game.player1Score : game.player2Score,
                   onAddGoal: canPlay ? () {
-                    _addGoalAndScroll(game.pinkPlayer);
+                    _addGoalAndScroll(game.secPlayer + 1);
                   } : null,
-                  color: Colors.pink,
+                  color: game.greenPlayer == game.secPlayer ? Colors.green : Colors.pink,
                 ),
               ],
             ),
@@ -274,7 +266,12 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       itemCount: game.scoreLog.length,
                       itemBuilder: (context, index) {
                         final entry = game.scoreLog[index];
-                        final name = entry.player == 1 ? game.selectedPlayer1 : game.selectedPlayer2;
+                        String name = 'Игрок';
+                        if (entry.player == 1 && game.players.length > 0) {
+                          name = game.players[0];
+                        } else if (entry.player == 2 && game.players.length > 1) {
+                          name = game.players[1];
+                        }
                         return ListTile(
                           title: Text('Гол: $name'),
                           subtitle: Text(entry.timestamp.toLocal().toString().split('.')[0]),
@@ -300,8 +297,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
                         final gameEntry = game.sessionGames[index];
                         final p1 = gameEntry.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
                         final p2 = gameEntry.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
+                        final name1 = game.players.length > 0 ? game.players[0] : 'Игрок 1';
+                        final name2 = game.players.length > 1 ? game.players[1] : 'Игрок 2';
                         return ListTile(
-                          title: Text('Партия ${index + 1}: ${game.selectedPlayer1 ?? 'Игрок 1'} - $p1, ${game.selectedPlayer2 ?? 'Игрок 2'} - $p2'),
+                          title: Text('Партия ${index + 1}: $name1 - $p1, $name2 - $p2'),
                           subtitle: Text('Голов: ${gameEntry.length}'),
                         );
                       },

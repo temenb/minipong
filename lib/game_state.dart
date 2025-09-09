@@ -13,42 +13,36 @@ class GameState {
   List<List<ScoreLogEntry>> savedGames = [];
   List<List<ScoreLogEntry>> sessionGames = [];
   List<String> players = [];
-  String? selectedPlayer1;
-  String? selectedPlayer2;
   int serveSwitchMode = 5;
   bool lock = false;
-  int? _firstServer; // 1 или 2
 
   int get player1Score => scoreLog.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
   int get player2Score => scoreLog.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
   int get totalScore => scoreLog.fold(0, (sum, e) => sum + e.delta);
   int get firPlayer {
-    if (lock || scoreLog.isEmpty) {
-      return 1;
+    if (lock) {
+      return 0;
     }
     // Если замок открыт, вычисляем по serveSwitchMode
     int switches = (totalScore ~/ serveSwitchMode) % 2;
     // Если switches чётное — первый подающий, нечётное — второй
-    return switches == 0 ? _firstServer! : (_firstServer == 1 ? 2 : 1);
+    return switches;
   }
   int get secPlayer {
-    return firPlayer == 1 ? 2 : 1;
+    return firPlayer == 1 ? 0 : 1;
   }
-  int get greenPlayer => firPlayer;
-  int get pinkPlayer => secPlayer;
-
+  int get greenPlayer {
+    int switches = (totalScore ~/ serveSwitchMode) % 2;
+    return switches;
+  }
+  int get pinkPlayer {
+    return greenPlayer == 1 ? 0 : 1;
+  }
 
   Future<void> loadPlayers() async {
     final prefs = await SharedPreferences.getInstance();
     final loadedPlayers = prefs.getStringList('players') ?? [];
     players = loadedPlayers;
-    if (players.length >= 2) {
-      selectedPlayer1 ??= players[0];
-      selectedPlayer2 ??= players[1];
-    } else {
-      selectedPlayer1 = null;
-      selectedPlayer2 = null;
-    }
   }
 
   Future<void> addPlayer(int index, String name) async {
@@ -62,11 +56,11 @@ class GameState {
   }
 
   void setSelectedPlayer1(String name) {
-    selectedPlayer1 = name;
+    if (players.isNotEmpty) players[0] = name;
   }
 
   void setSelectedPlayer2(String name) {
-    selectedPlayer2 = name;
+    if (players.length > 1) players[1] = name;
   }
 
   Future<void> loadSavedGames() async {
@@ -100,24 +94,11 @@ class GameState {
 
   void addGoalToPlayer(int playerNum) {
     scoreLog.add(ScoreLogEntry(playerNum, 1));
-    // После первого гола запоминаем первого подающего
-    if (_firstServer == null) {
-      _firstServer = playerNum;
-    }
   }
 
   void deleteLogEntry(int index) {
     if (index >= 0 && index < scoreLog.length) {
       scoreLog.removeAt(index);
-      // Если после удаления нет голов, сбрасываем выбранных игроков и первого подающего
-      if (scoreLog.isEmpty) {
-        selectedPlayer1 = null;
-        selectedPlayer2 = null;
-        _firstServer = null;
-      } else {
-        // Перезаписываем первого подающего по первому голу
-        _firstServer = scoreLog.first.player;
-      }
     }
   }
 }
