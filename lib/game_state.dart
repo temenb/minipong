@@ -18,7 +18,7 @@ class GameState {
   List<String> players = [];
   bool lock = false;
   final List<int> _scoreOptions = [11, 21, 31];
-  final List<int> _serveSwitchModes = [2, 5, 41];
+  final List<int> _serveSwitchModes = [2, 5, 5];
   int _selectedScore = 0; // теперь это индекс
 
   List<int> get scoreOptions => List.unmodifiable(_scoreOptions);
