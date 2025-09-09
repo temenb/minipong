@@ -1,19 +1,22 @@
-import 'package:minipong/player_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Player {
   final String name;
   bool isActive;
+
   Player(this.name, {this.isActive = true});
 
   Map<String, dynamic> toJson() => {'name': name, 'isActive': isActive};
+
   static Player fromJson(Map<String, dynamic> json) =>
       Player(json['name'], isActive: json['isActive'] ?? true);
 }
 
 class PlayerRepository {
   static final PlayerRepository instance = PlayerRepository._internal();
+
   PlayerRepository._internal();
+
   static const String _storageKey = 'players_names_v2';
   final List<Player> _players = [];
 

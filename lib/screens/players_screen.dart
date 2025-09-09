@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:minipong/player_repository.dart';
-import 'package:minipong/screens/score_screen.dart';
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});

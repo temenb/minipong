@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:minipong/player_repository.dart';
-import 'package:minipong/widgets/score_limit_dropdown.dart';
 import 'package:minipong/game_state.dart';
 import 'package:minipong/widgets/player_score_widget.dart';
+import 'package:minipong/widgets/score_limit_dropdown.dart';
 
 class ScoreScreen extends StatefulWidget {
   const ScoreScreen({super.key});
@@ -40,7 +39,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
               selectedPlayerIndex: 0,
               onPlayerChanged: (index) {
                 if (gameState.activePlayerNames.isNotEmpty) {
-                  gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
+                  gameState.setSelectedPlayer1(
+                    gameState.activePlayerNames[index],
+                  );
                   setState(() {});
                 }
               },
@@ -56,7 +57,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
               selectedPlayerIndex: 1,
               onPlayerChanged: (index) {
                 if (gameState.activePlayerNames.length > 1) {
-                  gameState.setSelectedPlayer2(gameState.activePlayerNames[index]);
+                  gameState.setSelectedPlayer2(
+                    gameState.activePlayerNames[index],
+                  );
                   setState(() {});
                 }
               },

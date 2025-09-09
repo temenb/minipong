@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:minipong/widgets/score_limit_dropdown.dart';
-import '../game_state.dart';
+import 'package:minipong/game_state.dart';
 
 class ScoreLimitDropdown extends StatelessWidget {
   final GameState gameState;

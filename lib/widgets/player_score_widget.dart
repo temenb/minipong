@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:minipong/widgets/score_limit_dropdown.dart';
 
 class PlayerScoreWidget extends StatelessWidget {
   final List<String> playerNames;
@@ -50,10 +49,7 @@ class PlayerScoreWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: onAddScore,
-          child: const Icon(Icons.add),
-        ),
+        ElevatedButton(onPressed: onAddScore, child: const Icon(Icons.add)),
       ],
     );
   }

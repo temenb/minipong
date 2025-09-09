@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/score_screen.dart';
-import 'package:minipong/screens/score_screen.dart';
 import 'package:minipong/screens/players_screen.dart';
+import 'package:minipong/screens/score_screen.dart';
+
 class TableTennisScoreApp extends StatelessWidget {
   const TableTennisScoreApp({super.key});
 
@@ -30,7 +30,10 @@ class HomeScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 32,
+                ),
                 textStyle: const TextStyle(fontSize: 32),
               ),
               onPressed: () {
@@ -43,12 +46,17 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 32),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 16,
+                ),
                 textStyle: const TextStyle(fontSize: 24),
               ),
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const PlayersScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const PlayersScreen(),
+                  ),
                 );
               },
               child: const Text('Список игроков'),
@@ -59,4 +67,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
