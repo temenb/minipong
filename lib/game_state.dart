@@ -139,9 +139,13 @@ class GameState {
     }
   }
 
+  bool isGameFinished() {
+    return totalScore >= _scoreOptions[_selectedScore];
+  }
+
   void reset() {
     scoreLog.clear();
-    _selectedScore = 0;
+    _selectedScore = 1;
     // Заполняем players первыми двумя активными игроками
     final active = playerRepository.activePlayerNames;
     players = [];

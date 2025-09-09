@@ -79,11 +79,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   playerNames: gameState.activePlayerNames,
                   selectedPlayerIndex: gameState.firPlayer,
                   onPlayerChanged: (index) {
-                    if (gameState.totalScore == 0) {
-                      setState(() {
-                        gameState.players[gameState.firPlayer] = gameState.activePlayerNames[index];
-                      });
-                    }
+                    setState(() {
+                      gameState.players[gameState.firPlayer] = gameState.activePlayerNames[index];
+                    });
                   },
                   score: gameState.firPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () {
@@ -92,6 +90,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   },
                   isGreen: gameState.greenPlayer == gameState.firPlayer,
                   isPink: gameState.pinkPlayer == gameState.firPlayer,
+                  enabled: !gameState.isGameFinished(),
+                  dropdownEnabled: gameState.totalScore == 0,
                 ),
                 // Кнопка смены игроков и замок
                 Column(
@@ -130,11 +130,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   playerNames: gameState.activePlayerNames,
                   selectedPlayerIndex: gameState.secPlayer,
                   onPlayerChanged: (index) {
-                    if (gameState.totalScore == 0) {
-                      setState(() {
-                        gameState.players[gameState.secPlayer] = gameState.activePlayerNames[index];
-                      });
-                    }
+                    setState(() {
+                      gameState.players[gameState.secPlayer] = gameState.activePlayerNames[index];
+                    });
                   },
                   score: gameState.secPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () {
@@ -143,6 +141,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   },
                   isGreen: gameState.greenPlayer == gameState.secPlayer,
                   isPink: gameState.pinkPlayer == gameState.secPlayer,
+                  enabled: !gameState.isGameFinished(),
+                  dropdownEnabled: gameState.totalScore == 0,
                 ),
               ],
             ),

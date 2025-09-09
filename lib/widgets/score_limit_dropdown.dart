@@ -13,6 +13,7 @@ class ScoreLimitDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool enabled = gameState.totalScore == 0;
     return DropdownButton<int>(
       value: gameState.selectedScore,
       items: List.generate(gameState.scoreOptions.length, (index) {
@@ -21,12 +22,14 @@ class ScoreLimitDropdown extends StatelessWidget {
           child: Text('${gameState.scoreOptions[index]}'),
         );
       }),
-      onChanged: (index) {
-        if (index != null) {
-          gameState.selectedScore = index;
-          if (onChanged != null) onChanged!();
-        }
-      },
+      onChanged: enabled
+          ? (index) {
+              if (index != null) {
+                gameState.selectedScore = index;
+                if (onChanged != null) onChanged!();
+              }
+            }
+          : null,
     );
   }
 }

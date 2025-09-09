@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class PlayerScoreWidget extends StatelessWidget {
   final List<String> playerNames;
   final int? selectedPlayerIndex;
-  final ValueChanged<int> onPlayerChanged;
+  final ValueChanged<int>? onPlayerChanged;
   final int score;
   final VoidCallback onAddScore;
   final bool isGreen;
   final bool isPink;
+  final bool enabled;
+  final bool dropdownEnabled;
 
   const PlayerScoreWidget({
     super.key,
@@ -18,6 +20,8 @@ class PlayerScoreWidget extends StatelessWidget {
     required this.onAddScore,
     this.isGreen = false,
     this.isPink = false,
+    this.enabled = true,
+    this.dropdownEnabled = true,
   });
 
   @override
@@ -36,9 +40,9 @@ class PlayerScoreWidget extends StatelessWidget {
               child: Text(playerNames[index]),
             );
           }),
-          onChanged: onPlayerChanged != null
+          onChanged: dropdownEnabled && onPlayerChanged != null
               ? (index) {
-                  if (index != null) onPlayerChanged(index);
+                  if (index != null) onPlayerChanged!(index);
                 }
               : null,
         ),
