@@ -57,12 +57,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
             children: [
               PlayerScoreWidget(
                 playerNames: gameState.activePlayerNames,
-                selectedPlayerIndex: (() {
-                  final idx = gameState.activePlayerNames.indexOf(
-                    gameState.players.isNotEmpty ? gameState.players[gameState.firPlayer] : ''
-                  );
-                  return idx >= 0 ? idx : null;
-                })(),
+                selectedPlayerIndex: 0,
                 onPlayerChanged: (index) {
                   if (gameState.activePlayerNames.isNotEmpty) {
                     gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
@@ -109,12 +104,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
               ),
               PlayerScoreWidget(
                 playerNames: gameState.activePlayerNames,
-                selectedPlayerIndex: (() {
-                  final idx = gameState.activePlayerNames.indexOf(
-                    gameState.players.length > 1 ? gameState.players[gameState.secPlayer] : ''
-                  );
-                  return idx >= 0 ? idx : null;
-                })(),
+                selectedPlayerIndex: 1,
                 onPlayerChanged: (index) {
                   if (gameState.activePlayerNames.length > 1) {
                     gameState.setSelectedPlayer2(gameState.activePlayerNames[index]);
