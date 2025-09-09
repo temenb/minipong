@@ -198,28 +198,33 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Левая сторона: firPlayer
                 Column(
                   children: [
-                    DropdownButton<String>(
-                      value: selectedFir ?? activePlayers.first,
-                      items: activePlayers.map((player) {
-                        return DropdownMenuItem<String>(
-                          value: player,
-                          child: Text(player),
-                        );
-                      }).toList(),
-                      onChanged: game.totalScore == 0
-                          ? (value) async {
-                              if (value == selectedSec) return; // нельзя выбрать одинаковых
-                              await game.addPlayer(game.firPlayer, value!);
-                              if (selectedSec == value) {
-                                if (secOptions.isNotEmpty) {
-                                  await game.addPlayer(game.secPlayer, secOptions.first);
-                                }
-                              }
-                              setState(() {});
-                            }
-                          : null,
-                      disabledHint: Text(selectedFir ?? activePlayers.first),
-                    ),
+                    activePlayers.isNotEmpty
+                        ? DropdownButton<String>(
+                            value: selectedFir ?? activePlayers.first,
+                            items: activePlayers.map((player) {
+                              return DropdownMenuItem<String>(
+                                value: player,
+                                child: Text(player, style: const TextStyle(fontSize: 32, color: Colors.black)), // текст черный
+                              );
+                            }).toList(),
+                            onChanged: game.totalScore == 0
+                                ? (value) async {
+                                    if (value == selectedSec) return;
+                                    await game.addPlayer(game.firPlayer, value!);
+                                    if (selectedSec == value) {
+                                      if (secOptions.isNotEmpty) {
+                                        await game.addPlayer(game.secPlayer, secOptions.first);
+                                      }
+                                    }
+                                    setState(() {});
+                                  }
+                                : null,
+                            disabledHint: Text(selectedFir ?? (activePlayers.isNotEmpty ? activePlayers.first : 'Нет игроков'), style: const TextStyle(fontSize: 32, color: Colors.black)),
+                            style: const TextStyle(fontSize: 32, color: Colors.black), // текст черный
+                            iconSize: 48,
+                            itemHeight: 80,
+                          )
+                        : Text('Нет доступных игроков', style: const TextStyle(fontSize: 24, color: Colors.red)),
                   ],
                 ),
                 // --- Кнопка обмена игроков над замочком ---
@@ -256,23 +261,28 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Правая сторона: secPlayer
                 Column(
                   children: [
-                    DropdownButton<String>(
-                      value: selectedSec ?? secOptions.first,
-                      items: secOptions.map((player) {
-                        return DropdownMenuItem<String>(
-                          value: player,
-                          child: Text(player),
-                        );
-                      }).toList(),
-                      onChanged: game.totalScore == 0
-                          ? (value) async {
-                              if (value == selectedFir) return; // нельзя выбрать одинаковых
-                              await game.addPlayer(game.secPlayer, value!);
-                              setState(() {});
-                            }
-                          : null,
-                      disabledHint: Text(selectedSec ?? secOptions.first),
-                    ),
+                    secOptions.isNotEmpty
+                        ? DropdownButton<String>(
+                            value: selectedSec ?? secOptions.first,
+                            items: secOptions.map((player) {
+                              return DropdownMenuItem<String>(
+                                value: player,
+                                child: Text(player, style: const TextStyle(fontSize: 32, color: Colors.black)), // текст черный
+                              );
+                            }).toList(),
+                            onChanged: game.totalScore == 0
+                                ? (value) async {
+                                    if (value == selectedFir) return;
+                                    await game.addPlayer(game.secPlayer, value!);
+                                    setState(() {});
+                                  }
+                                : null,
+                            disabledHint: Text(selectedSec ?? (secOptions.isNotEmpty ? secOptions.first : 'Нет игроков'), style: const TextStyle(fontSize: 32, color: Colors.black)),
+                            style: const TextStyle(fontSize: 32, color: Colors.black), // текст черный
+                            iconSize: 48,
+                            itemHeight: 80,
+                          )
+                        : Text('Нет доступных игроков', style: const TextStyle(fontSize: 24, color: Colors.red)),
                   ],
                 ),
               ],
