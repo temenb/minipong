@@ -36,9 +36,11 @@ class PlayerScoreWidget extends StatelessWidget {
               child: Text(playerNames[index]),
             );
           }),
-          onChanged: (index) {
-            if (index != null) onPlayerChanged(index);
-          },
+          onChanged: onPlayerChanged != null
+              ? (index) {
+                  if (index != null) onPlayerChanged(index);
+                }
+              : null,
         ),
         const SizedBox(height: 16),
         Container(
