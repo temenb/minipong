@@ -83,10 +83,12 @@ class GameState {
   }
 
   void setSelectedPlayer1(String name) {
+    if (totalScore > 0) return;
     if (players.isNotEmpty) players[0] = name;
   }
 
   void setSelectedPlayer2(String name) {
+    if (totalScore > 0) return;
     if (players.length > 1) players[1] = name;
   }
 

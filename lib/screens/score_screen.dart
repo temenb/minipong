@@ -79,9 +79,11 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   playerNames: gameState.activePlayerNames,
                   selectedPlayerIndex: gameState.firPlayer,
                   onPlayerChanged: (index) {
-                    setState(() {
-                      gameState.players[gameState.firPlayer] = gameState.activePlayerNames[index];
-                    });
+                    if (gameState.totalScore == 0) {
+                      setState(() {
+                        gameState.players[gameState.firPlayer] = gameState.activePlayerNames[index];
+                      });
+                    }
                   },
                   score: gameState.firPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () {
@@ -99,15 +101,17 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       child: IconButton(
                         icon: const Icon(Icons.swap_horiz, size: 32),
                         tooltip: 'Поменять местами игроков',
-                        onPressed: () {
-                          setState(() {
-                            if (gameState.players.length > 1) {
-                              final tmp = gameState.players[0];
-                              gameState.players[0] = gameState.players[1];
-                              gameState.players[1] = tmp;
-                            }
-                          });
-                        },
+                        onPressed: gameState.totalScore == 0
+                            ? () {
+                                setState(() {
+                                  if (gameState.players.length > 1) {
+                                    final tmp = gameState.players[0];
+                                    gameState.players[0] = gameState.players[1];
+                                    gameState.players[1] = tmp;
+                                  }
+                                });
+                              }
+                            : null,
                       ),
                     ),
                     IconButton(
@@ -126,9 +130,11 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   playerNames: gameState.activePlayerNames,
                   selectedPlayerIndex: gameState.secPlayer,
                   onPlayerChanged: (index) {
-                    setState(() {
-                      gameState.players[gameState.secPlayer] = gameState.activePlayerNames[index];
-                    });
+                    if (gameState.totalScore == 0) {
+                      setState(() {
+                        gameState.players[gameState.secPlayer] = gameState.activePlayerNames[index];
+                      });
+                    }
                   },
                   score: gameState.secPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () {
@@ -145,7 +151,14 @@ class _ScoreScreenState extends State<ScoreScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: CurrentGoalsList(gameState: gameState),
+                    child: CurrentGoalsList(
+                      gameState: gameState,
+                      onDelete: (index) {
+                        setState(() {
+                          gameState.deleteLogEntry(index);
+                        });
+                      },
+                    ),
                   ),
                   Expanded(
                     child: GamesHistoryList(gameState: gameState),

@@ -3,7 +3,8 @@ import 'package:minipong/game_state.dart';
 
 class CurrentGoalsList extends StatelessWidget {
   final GameState gameState;
-  const CurrentGoalsList({super.key, required this.gameState});
+  final ValueChanged<int>? onDelete;
+  const CurrentGoalsList({super.key, required this.gameState, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,13 @@ class CurrentGoalsList extends StatelessWidget {
               return ListTile(
                 title: Text('Игрок ${entry.player}: +${entry.delta}'),
                 subtitle: Text('${entry.timestamp.hour}:${entry.timestamp.minute}:${entry.timestamp.second}'),
+                trailing: onDelete != null
+                    ? IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        tooltip: 'Удалить гол',
+                        onPressed: () => onDelete!(index),
+                      )
+                    : null,
               );
             },
           ),
@@ -30,4 +38,3 @@ class CurrentGoalsList extends StatelessWidget {
     );
   }
 }
-
