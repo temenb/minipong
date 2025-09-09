@@ -19,16 +19,16 @@ class PlayerRepository {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getStringList(_key);
     if (raw != null && raw.isNotEmpty) {
-      // New format: List of JSON strings
+      // Новый формат: только имена игроков
       return raw
           .map((str) => Player.fromJson(Map<String, dynamic>.from(jsonDecode(str))))
           .toList();
     }
-    // Try legacy format: List<String>
+    // Попробовать старый формат: List<String>
     final legacyRaw = prefs.getStringList(_legacyKey);
     if (legacyRaw != null && legacyRaw.isNotEmpty) {
       final players = legacyRaw.map((name) => Player(name, isActive: true)).toList();
-      await saveAllPlayers(players); // Migrate to new format
+      await saveAllPlayers(players); // Миграция на новый формат
       return players;
     }
     return [];
@@ -36,7 +36,8 @@ class PlayerRepository {
 
   Future<void> saveAllPlayers(List<Player> players) async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = players.map((p) => jsonEncode(p.toJson())).toList();
+    // Сохраняем только имена игроков, без информации о isActive
+    final raw = players.map((p) => jsonEncode({'name': p.name})).toList();
     await prefs.setStringList(_key, raw);
   }
 
@@ -48,10 +49,13 @@ class PlayerRepository {
   }
 
   Future<void> setPlayerActive(String name, bool isActive) async {
+    // Активность игроков не сохраняется между сессиями
+    // Просто меняем значение в текущем списке, но не сохраняем в SharedPreferences
+    // (удаляем поле isActive из сохранения)
     final players = await loadAllPlayers();
     for (var p in players) {
       if (p.name == name) p.isActive = isActive;
     }
-    await saveAllPlayers(players);
+    // НЕ вызываем saveAllPlayers(players);
   }
 }
