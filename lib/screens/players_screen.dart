@@ -48,6 +48,42 @@ class _PlayersScreenState extends State<PlayersScreen> {
     // Активность не сохраняем в хранилище
   }
 
+  Future<void> _movePlayerUp(int index) async {
+    int? targetIndex;
+    for (int i = index - 1; i >= 0; i--) {
+      if (_players[i].isActive) {
+        targetIndex = i;
+        break;
+      }
+    }
+    if (targetIndex != null) {
+      setState(() {
+        final temp = _players[targetIndex!];
+        _players[targetIndex!] = _players[index];
+        _players[index] = temp;
+      });
+      await _repository.saveAllPlayers(_players);
+    }
+  }
+
+  Future<void> _movePlayerDown(int index) async {
+    int? targetIndex;
+    for (int i = index + 1; i < _players.length; i++) {
+      if (_players[i].isActive) {
+        targetIndex = i;
+        break;
+      }
+    }
+    if (targetIndex != null) {
+      setState(() {
+        final temp = _players[targetIndex!];
+        _players[targetIndex!] = _players[index];
+        _players[index] = temp;
+      });
+      await _repository.saveAllPlayers(_players);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,9 +125,24 @@ class _PlayersScreenState extends State<PlayersScreen> {
                             onChanged: (_) => _toggleActive(player),
                           ),
                           title: Text(player.name),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _removePlayer(player.name),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.arrow_upward),
+                                tooltip: 'Вверх',
+                                onPressed: player.isActive && _hasActiveAbove(index) ? () => _movePlayerUp(index) : null,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.arrow_downward),
+                                tooltip: 'Вниз',
+                                onPressed: player.isActive && _hasActiveBelow(index) ? () => _movePlayerDown(index) : null,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () => _removePlayer(player.name),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -101,5 +152,19 @@ class _PlayersScreenState extends State<PlayersScreen> {
               ],
             ),
     );
+  }
+
+  bool _hasActiveAbove(int index) {
+    for (int i = index - 1; i >= 0; i--) {
+      if (_players[i].isActive) return true;
+    }
+    return false;
+  }
+
+  bool _hasActiveBelow(int index) {
+    for (int i = index + 1; i < _players.length; i++) {
+      if (_players[i].isActive) return true;
+    }
+    return false;
   }
 }
