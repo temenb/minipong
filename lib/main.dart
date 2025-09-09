@@ -126,6 +126,14 @@ class _ScoreScreenState extends State<ScoreScreen> {
     // canPlay зависит от количества доступных игроков
     final canPlay = activePlayers.length >= 2;
 
+    // Корректные значения для дропдаунов
+    String? firValue = activePlayers.contains(game.players[game.firPlayer])
+        ? game.players[game.firPlayer]
+        : (activePlayers.isNotEmpty ? activePlayers.first : null);
+    String? secValue = secOptions.contains(game.players[game.secPlayer])
+        ? game.players[game.secPlayer]
+        : (secOptions.isNotEmpty ? secOptions.first : null);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -200,18 +208,18 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   children: [
                     activePlayers.isNotEmpty
                         ? DropdownButton<String>(
-                            value: game.players[game.firPlayer] ?? activePlayers.first,
+                            value: firValue,
                             items: activePlayers.map((player) {
                               return DropdownMenuItem<String>(
                                 value: player,
-                                child: Text(player, style: const TextStyle(fontSize: 32, color: Colors.black)), // текст черный
+                                child: Text(player, style: const TextStyle(fontSize: 32, color: Colors.black)),
                               );
                             }).toList(),
                             onChanged: game.totalScore == 0
                                 ? (value) async {
-                                    if (value == game.players[game.secPlayer]) return;
+                                    if (value == secValue) return;
                                     await game.addPlayer(game.firPlayer, value!);
-                                    if (game.players[game.firPlayer] == value) {
+                                    if (secValue == value) {
                                       if (secOptions.isNotEmpty) {
                                         await game.addPlayer(game.secPlayer, secOptions.first);
                                       }
@@ -219,8 +227,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                                     setState(() {});
                                   }
                                 : null,
-                            disabledHint: Text(game.players[game.firPlayer] ?? (activePlayers.isNotEmpty ? activePlayers.first : 'Нет игроков'), style: const TextStyle(fontSize: 32, color: Colors.black)),
-                            style: const TextStyle(fontSize: 32, color: Colors.black), // текст черный
+                            disabledHint: Text(firValue ?? (activePlayers.isNotEmpty ? activePlayers.first : 'Нет игроков'), style: const TextStyle(fontSize: 32, color: Colors.black)),
+                            style: const TextStyle(fontSize: 32, color: Colors.black),
                             iconSize: 48,
                             itemHeight: 80,
                           )
@@ -234,10 +242,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       icon: const Icon(Icons.swap_horiz),
                       tooltip: 'Поменять игроков местами',
                       iconSize: 24,
-                      onPressed: (canPlay && game.totalScore == 0)
+                      onPressed: (firValue != null && secValue != null && game.totalScore == 0)
                           ? () async {
-                              final tmp = game.players[game.firPlayer];
-                              await game.addPlayer(game.firPlayer, game.players[game.firPlayer]!);
+                              final tmp = firValue;
+                              await game.addPlayer(game.firPlayer, secValue!);
                               await game.addPlayer(game.secPlayer, tmp!);
                               setState(() {});
                             }
@@ -263,22 +271,22 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   children: [
                     secOptions.isNotEmpty
                         ? DropdownButton<String>(
-                            value: game.players[game.firPlayer] ?? secOptions.first,
+                            value: secValue,
                             items: secOptions.map((player) {
                               return DropdownMenuItem<String>(
                                 value: player,
-                                child: Text(player, style: const TextStyle(fontSize: 32, color: Colors.black)), // текст черный
+                                child: Text(player, style: const TextStyle(fontSize: 32, color: Colors.black)),
                               );
                             }).toList(),
                             onChanged: game.totalScore == 0
                                 ? (value) async {
-                                    if (value == game.players[game.firPlayer]) return;
+                                    if (value == firValue) return;
                                     await game.addPlayer(game.secPlayer, value!);
                                     setState(() {});
                                   }
                                 : null,
-                            disabledHint: Text(game.players[game.secPlayer] ?? (secOptions.isNotEmpty ? secOptions.first : 'Нет игроков'), style: const TextStyle(fontSize: 32, color: Colors.black)),
-                            style: const TextStyle(fontSize: 32, color: Colors.black), // текст черный
+                            disabledHint: Text(secValue ?? (secOptions.isNotEmpty ? secOptions.first : 'Нет игроков'), style: const TextStyle(fontSize: 32, color: Colors.black)),
+                            style: const TextStyle(fontSize: 32, color: Colors.black),
                             iconSize: 48,
                             itemHeight: 80,
                           )
