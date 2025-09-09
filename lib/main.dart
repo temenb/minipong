@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'game_state.dart'; // новый модуль с логикой
+import 'player_repository.dart';
 
 void main() {
   runApp(const TableTennisScoreApp());
@@ -75,16 +76,25 @@ class ScoreScreen extends StatefulWidget {
 class _ScoreScreenState extends State<ScoreScreen> {
   final GameState game = GameState();
   final FocusNode _focusNode = FocusNode();
+  final PlayerRepository repository = PlayerRepository();
+  List<String> allPlayers = [];
   final ScrollController _scoreScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     game.loadPlayers().then((_) => setState(() {}));
-    game.loadSavedGames().then((_) => setState(() {}));
+    _loadPlayers();
   }
 
-  @override
+  Future<void> _loadPlayers() async {
+    allPlayers = await repository.loadAllPlayers();
+    if (game.players.length < 2 && allPlayers.length >= 2) {
+      game.players = [allPlayers[0], allPlayers[1]];
+    }
+    setState(() {});
+  }
+
   void dispose() {
     _focusNode.dispose();
     _scoreScrollController.dispose();
@@ -168,17 +178,18 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   children: [
                     Text('Игрок ${game.firPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: game.players.length > game.firPlayer ? game.players[game.firPlayer] : null,
-                      items: game.players.map((player) {
+                      value: (game.players.length > game.firPlayer && allPlayers.contains(game.players[game.firPlayer]))
+                        ? game.players[game.firPlayer]
+                        : null,
+                      items: allPlayers.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
                           child: Text(player),
                         );
                       }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          if (game.players.length > game.firPlayer) game.players[game.firPlayer] = value!;
-                        });
+                      onChanged: (value) async {
+                        await game.addPlayer(game.firPlayer, value!);
+                        setState(() {});
                       },
                     ),
                   ],
@@ -202,17 +213,18 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   children: [
                     Text('Игрок ${game.secPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: game.players.length > game.secPlayer ? game.players[game.secPlayer] : null,
-                      items: game.players.map((player) {
+                      value: (game.players.length > game.secPlayer && allPlayers.contains(game.players[game.secPlayer]))
+                        ? game.players[game.secPlayer]
+                        : null,
+                      items: allPlayers.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
                           child: Text(player),
                         );
                       }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          if (game.players.length > game.secPlayer) game.players[game.secPlayer] = value!;
-                        });
+                      onChanged: (value) async {
+                        await game.addPlayer(game.secPlayer, value!);
+                        setState(() {});
                       },
                     ),
                   ],
@@ -359,12 +371,18 @@ class PlayersScreen extends StatefulWidget {
 }
 
 class _PlayersScreenState extends State<PlayersScreen> {
-  final GameState game = GameState();
+  final PlayerRepository repository = PlayerRepository();
+  List<String> allPlayers = [];
 
   @override
   void initState() {
     super.initState();
-    game.loadPlayers().then((_) => setState(() {}));
+    _loadPlayers();
+  }
+
+  Future<void> _loadPlayers() async {
+    allPlayers = await repository.loadAllPlayers();
+    setState(() {});
   }
 
   void showAddPlayerDialog() {
@@ -387,7 +405,10 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              setState(() {});
+              if (newName.trim().isNotEmpty && !allPlayers.contains(newName)) {
+                await repository.addPlayer(newName);
+                await _loadPlayers();
+              }
               Navigator.of(context).pop();
             },
             child: const Text('Добавить'),
@@ -401,13 +422,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Список игроков')),
-      body: game.players.isEmpty
+      body: allPlayers.isEmpty
           ? const Center(child: Text('Нет игроков'))
           : ListView.builder(
-              itemCount: game.players.length,
+              itemCount: allPlayers.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(game.players[index]),
+                  title: Text(allPlayers[index]),
                 );
               },
             ),
