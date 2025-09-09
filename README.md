@@ -1,16 +1,43 @@
 # minipong
 
-A new Flutter project.
+Приложение для ведения счета настольного тенниса.
 
-## Getting Started
+## Возможности
 
-This project is a starting point for a Flutter application.
+- Добавление и выбор игроков
+- Ведение счета для двух игроков
+- Сохранение партий
+- Управление режимом смены подачи (2 или 5 ходов)
+- Быстрое добавление голов с помощью кнопок и горячих клавиш (Ctrl/Space/Enter)
+- История голов и партий
 
-A few resources to get you started if this is your first Flutter project:
+## Запуск
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Установите [Flutter](https://flutter.dev/docs/get-started/install).
+2. Клонируйте репозиторий:
+   ```
+   git clone <адрес репозитория>
+   ```
+3. Перейдите в папку проекта:
+   ```
+   cd minipong
+   ```
+4. Запустите приложение:
+   ```
+   flutter run
+   ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Структура
+
+- `lib/main.dart` — основной код приложения
+- `lib/game_rules.dart` — логика игры (если используется)
+- `README.md` — описание проекта
+
+## Горячие клавиши
+
+- **Ctrl** или **Пробел** — добавить гол левому игроку
+- **Enter** — добавить гол правому игроку
+
+## Лицензия
+
+MIT
