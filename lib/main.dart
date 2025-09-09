@@ -163,20 +163,29 @@ class _ScoreScreenState extends State<ScoreScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Игрок 1: '),
-                DropdownButton<String>(
-                  value: game.selectedPlayer1,
-                  items: game.players.map((player) {
-                    return DropdownMenuItem<String>(
-                      value: player,
-                      child: Text(player),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      game.setSelectedPlayer1(value!);
-                    });
-                  },
+                // Левая сторона: firPlayer
+                Column(
+                  children: [
+                    Text('Игрок ${game.firPlayer}:'),
+                    DropdownButton<String>(
+                      value: game.firPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2,
+                      items: game.players.map((player) {
+                        return DropdownMenuItem<String>(
+                          value: player,
+                          child: Text(player),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          if (game.firPlayer == 1) {
+                            game.setSelectedPlayer1(value!);
+                          } else {
+                            game.setSelectedPlayer2(value!);
+                          }
+                        });
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(
@@ -192,20 +201,29 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Text('Игрок 2: '),
-                DropdownButton<String>(
-                  value: game.selectedPlayer2,
-                  items: game.players.map((player) {
-                    return DropdownMenuItem<String>(
-                      value: player,
-                      child: Text(player),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      game.setSelectedPlayer1(value!);
-                    });
-                  },
+                // Правая сторона: secPlayer
+                Column(
+                  children: [
+                    Text('Игрок ${game.secPlayer}:'),
+                    DropdownButton<String>(
+                      value: game.secPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2,
+                      items: game.players.map((player) {
+                        return DropdownMenuItem<String>(
+                          value: player,
+                          child: Text(player),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          if (game.secPlayer == 1) {
+                            game.setSelectedPlayer1(value!);
+                          } else {
+                            game.setSelectedPlayer2(value!);
+                          }
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -213,12 +231,24 @@ class _ScoreScreenState extends State<ScoreScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                scoreBox(game.selectedPlayer1 ?? 'Игрок 1', game.player1Score, onAddGoal: canPlay ? () {
-                  _addGoalAndScroll(1);
-                } : null),
-                scoreBox(game.selectedPlayer2 ?? 'Игрок 2', game.player2Score, onAddGoal: canPlay ? () {
-                  _addGoalAndScroll(2);
-                } : null),
+                // Левая кнопка и табло: firPlayer/greenPlayer
+                scoreBox(
+                  (game.greenPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2) ?? 'Игрок',
+                  game.greenPlayer == 1 ? game.player1Score : game.player2Score,
+                  onAddGoal: canPlay ? () {
+                    _addGoalAndScroll(game.greenPlayer);
+                  } : null,
+                  color: Colors.green,
+                ),
+                // Правая кнопка и табло: pinkPlayer/secPlayer
+                scoreBox(
+                  (game.pinkPlayer == 1 ? game.selectedPlayer1 : game.selectedPlayer2) ?? 'Игрок',
+                  game.pinkPlayer == 1 ? game.player1Score : game.player2Score,
+                  onAddGoal: canPlay ? () {
+                    _addGoalAndScroll(game.pinkPlayer);
+                  } : null,
+                  color: Colors.pink,
+                ),
               ],
             ),
             if (!canPlay)
@@ -283,7 +313,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
     );
   }
 
-  Widget scoreBox(String name, int score, {VoidCallback? onAddGoal}) {
+  Widget scoreBox(String name, int score, {VoidCallback? onAddGoal, Color? color}) {
     return Column(
       children: [
         Container(
@@ -291,7 +321,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
           height: 120,
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: color ?? Colors.white,
             border: Border.all(color: Colors.grey, width: 2),
             borderRadius: BorderRadius.circular(16),
           ),
