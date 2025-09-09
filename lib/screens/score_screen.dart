@@ -42,12 +42,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
             children: [
               PlayerScoreWidget(
                 playerNames: gameState.activePlayerNames,
-                selectedPlayerIndex: 0,
+                selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players.isNotEmpty ? gameState.players[gameState.firPlayer] : ''),
                 onPlayerChanged: (index) {
                   if (gameState.activePlayerNames.isNotEmpty) {
-                    gameState.setSelectedPlayer1(
-                      gameState.activePlayerNames[index],
-                    );
+                    gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
                     setState(() {});
                   }
                 },
@@ -56,18 +54,45 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   gameState.addGoalToPlayer(1);
                   setState(() {});
                 },
-                isGreen: gameState.greenPlayer == 0,
-                isPink: gameState.pinkPlayer == 0,
+                isGreen: gameState.greenPlayer == gameState.firPlayer,
+                isPink: gameState.pinkPlayer == gameState.firPlayer,
               ),
-              const SizedBox(width: 32),
+              // Кнопка смены игроков и замок
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: IconButton(
+                      icon: const Icon(Icons.swap_horiz, size: 32),
+                      tooltip: 'Поменять местами игроков',
+                      onPressed: () {
+                        setState(() {
+                          if (gameState.players.length > 1) {
+                            final tmp = gameState.players[0];
+                            gameState.players[0] = gameState.players[1];
+                            gameState.players[1] = tmp;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(gameState.lock ? Icons.lock : Icons.lock_open),
+                    tooltip: gameState.lock ? 'Замок закрыт' : 'Замок открыт',
+                    onPressed: () {
+                      setState(() {
+                        gameState.lock = !gameState.lock;
+                      });
+                    },
+                  ),
+                ],
+              ),
               PlayerScoreWidget(
                 playerNames: gameState.activePlayerNames,
-                selectedPlayerIndex: 1,
+                selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players.length > 1 ? gameState.players[gameState.secPlayer] : ''),
                 onPlayerChanged: (index) {
                   if (gameState.activePlayerNames.length > 1) {
-                    gameState.setSelectedPlayer2(
-                      gameState.activePlayerNames[index],
-                    );
+                    gameState.setSelectedPlayer2(gameState.activePlayerNames[index]);
                     setState(() {});
                   }
                 },
@@ -76,8 +101,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   gameState.addGoalToPlayer(2);
                   setState(() {});
                 },
-                isGreen: gameState.greenPlayer == 1,
-                isPink: gameState.pinkPlayer == 1,
+                isGreen: gameState.greenPlayer == gameState.secPlayer,
+                isPink: gameState.pinkPlayer == gameState.secPlayer,
               ),
             ],
           ),
