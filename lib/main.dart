@@ -118,13 +118,13 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final canPlay = game.players.length >= 2 &&
-        game.players[0].isNotEmpty &&
-        game.players[1].isNotEmpty &&
-        game.players[0] != game.players[1];
+    final activePlayers = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
+    String? selectedFir = (game.players.length > game.firPlayer && activePlayers.contains(game.players[game.firPlayer])) ? game.players[game.firPlayer] : null;
+    String? selectedSec = (game.players.length > game.secPlayer && activePlayers.contains(game.players[game.secPlayer])) ? game.players[game.secPlayer] : null;
 
-    // --- ScoreScreen: дропдауны только для активных игроков ---
-    final activeNames = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
+    // Для второго дропдауна исключаем выбранного первого игрока
+    final secOptions = activePlayers.where((name) => name != selectedFir).toList();
+    final canPlay = selectedFir != null && selectedSec != null && selectedFir != selectedSec;
 
     return Scaffold(
       appBar: AppBar(
@@ -198,56 +198,80 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Левая сторона: firPlayer
                 Column(
                   children: [
-                    Text('Игрок ${game.firPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: (game.players.length > game.firPlayer && activeNames.contains(game.players[game.firPlayer]))
-                        ? game.players[game.firPlayer]
-                        : null,
-                      items: activeNames.map((player) {
+                      value: selectedFir ?? activePlayers.first,
+                      items: activePlayers.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
                           child: Text(player),
                         );
                       }).toList(),
-                      onChanged: (value) async {
-                        await game.addPlayer(game.firPlayer, value!);
-                        setState(() {});
-                      },
+                      onChanged: game.totalScore == 0
+                          ? (value) async {
+                              if (value == selectedSec) return; // нельзя выбрать одинаковых
+                              await game.addPlayer(game.firPlayer, value!);
+                              if (selectedSec == value) {
+                                if (secOptions.isNotEmpty) {
+                                  await game.addPlayer(game.secPlayer, secOptions.first);
+                                }
+                              }
+                              setState(() {});
+                            }
+                          : null,
+                      disabledHint: Text(selectedFir ?? activePlayers.first),
                     ),
                   ],
                 ),
-                const SizedBox(width: 16),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      game.lock = !game.lock;
-                    });
-                  },
-                  child: Icon(
-                    game.lock ? Icons.lock : Icons.lock_open,
-                    color: game.lock ? Colors.black : Colors.green,
-                    size: 32,
-                  ),
+                // --- Кнопка обмена игроков над замочком ---
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.swap_horiz),
+                      tooltip: 'Поменять игроков местами',
+                      iconSize: 24,
+                      onPressed: (canPlay && game.totalScore == 0)
+                          ? () async {
+                              final tmp = selectedFir;
+                              await game.addPlayer(game.firPlayer, selectedSec!);
+                              await game.addPlayer(game.secPlayer, tmp!);
+                              setState(() {});
+                            }
+                          : null,
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          game.lock = !game.lock;
+                        });
+                      },
+                      child: Icon(
+                        game.lock ? Icons.lock : Icons.lock_open,
+                        color: game.lock ? Colors.black : Colors.green,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
                 // Правая сторона: secPlayer
                 Column(
                   children: [
-                    Text('Игрок ${game.secPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: (game.players.length > game.secPlayer && activeNames.contains(game.players[game.secPlayer]))
-                        ? game.players[game.secPlayer]
-                        : null,
-                      items: activeNames.map((player) {
+                      value: selectedSec ?? secOptions.first,
+                      items: secOptions.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
                           child: Text(player),
                         );
                       }).toList(),
-                      onChanged: (value) async {
-                        await game.addPlayer(game.secPlayer, value!);
-                        setState(() {});
-                      },
+                      onChanged: game.totalScore == 0
+                          ? (value) async {
+                              if (value == selectedFir) return; // нельзя выбрать одинаковых
+                              await game.addPlayer(game.secPlayer, value!);
+                              setState(() {});
+                            }
+                          : null,
+                      disabledHint: Text(selectedSec ?? secOptions.first),
                     ),
                   ],
                 ),
