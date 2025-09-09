@@ -56,6 +56,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   gameState.addGoalToPlayer(1);
                   setState(() {});
                 },
+                isGreen: gameState.greenPlayer == 0,
+                isPink: gameState.pinkPlayer == 0,
               ),
               const SizedBox(width: 32),
               PlayerScoreWidget(
@@ -74,6 +76,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   gameState.addGoalToPlayer(2);
                   setState(() {});
                 },
+                isGreen: gameState.greenPlayer == 1,
+                isPink: gameState.pinkPlayer == 1,
               ),
             ],
           ),
