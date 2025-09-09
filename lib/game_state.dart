@@ -9,12 +9,19 @@ class ScoreLogEntry {
 }
 
 class GameState {
+  static final GameState instance = GameState._internal();
+  GameState._internal();
+
   List<ScoreLogEntry> scoreLog = [];
   List<List<ScoreLogEntry>> savedGames = [];
   List<List<ScoreLogEntry>> sessionGames = [];
   List<String> players = [];
-  int serveSwitchMode = 5;
   bool lock = false;
+  final List<int> _scoreOptions = [11, 21, 31];
+  int _selectedScore = 21;
+  int serveSwitchMode = 5;
+
+  List<int> get scoreOptions => List.unmodifiable(_scoreOptions);
 
   int get player1Score => scoreLog.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
   int get player2Score => scoreLog.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
@@ -88,10 +95,6 @@ class GameState {
     scoreLog.clear();
   }
 
-  void setServeSwitchMode(int mode) {
-    serveSwitchMode = mode;
-  }
-
   void addGoalToPlayer(int playerNum) {
     scoreLog.add(ScoreLogEntry(playerNum, 1));
   }
@@ -100,5 +103,11 @@ class GameState {
     if (index >= 0 && index < scoreLog.length) {
       scoreLog.removeAt(index);
     }
+  }
+
+  int get selectedScore => _selectedScore;
+  set selectedScore(int value) {
+    _selectedScore = value;
+    serveSwitchMode = (value == 11) ? 2 : 5;
   }
 }
