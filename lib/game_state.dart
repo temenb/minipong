@@ -67,6 +67,8 @@ class GameState {
     return greenPlayer == 1 ? 0 : 1;
   }
 
+  int? moreLessPlayer;
+
   Future<void> loadPlayers() async {
     final prefs = await SharedPreferences.getInstance();
     final loadedPlayers = prefs.getStringList('players') ?? [];
@@ -139,22 +141,35 @@ class GameState {
       return;
     }
     _lastGoalTime = now;
+
+    int server = greenPlayer;
     scoreLog.add(ScoreLogEntry(playerNum, 1));
     if (playerNum == 1) {
       _audioPlayer.play(AssetSource('audio/ping1.mp3'));
     } else if (playerNum == 2) {
       _audioPlayer.play(AssetSource('audio/ping2.mp3'));
     }
+    recalculateMoreOrLess(server);
+  }
+
+  void recalculateMoreOrLess(int server) {
+    int scoreLimit = _scoreOptions[selectedScore];
+    if ((player1Score >= scoreLimit - 1 || player2Score >= scoreLimit - 1)) {
+      moreLessPlayer = moreLessPlayer?? (server + 1) ~/ 2;
+    } else {
+      moreLessPlayer = null;
+    }
   }
 
   void deleteLogEntry(int index) {
+
     if (index >= 0 && index < scoreLog.length) {
       scoreLog.removeAt(index);
     }
   }
 
   bool isGameFinished() {
-    return totalScore >= _scoreOptions[_selectedScore];
+    return (moreLessPlayer == null)? (totalScore >= _scoreOptions[_selectedScore]) : ((player1Score-player2Score).abs() >= 2);
   }
 
   void reset() {
