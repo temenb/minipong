@@ -77,22 +77,25 @@ class _PlayersScreenState extends State<PlayersScreen> {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: _players.length,
-                    itemBuilder: (context, index) {
-                      final player = _players[index];
-                      return ListTile(
-                        leading: Checkbox(
-                          value: player.isActive,
-                          onChanged: (_) => _toggleActive(player),
-                        ),
-                        title: Text(player.name),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _removePlayer(player.name),
-                        ),
-                      );
-                    },
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    child: ListView.builder(
+                      itemCount: _players.length,
+                      itemBuilder: (context, index) {
+                        final player = _players[index];
+                        return ListTile(
+                          leading: Checkbox(
+                            value: player.isActive,
+                            onChanged: (_) => _toggleActive(player),
+                          ),
+                          title: Text(player.name),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _removePlayer(player.name),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

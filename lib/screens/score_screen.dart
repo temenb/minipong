@@ -42,6 +42,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
       gameState.players[1] = loser;
     }
     setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     if (gameState.activePlayerNames.length < 2) {
@@ -74,6 +76,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
           if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter) {
             gameState.addGoalToPlayer(2);
             setState(() {});
+          }
+          // Escape — сохранить игру и сменить игроков
+          if (key == LogicalKeyboardKey.escape) {
+            _saveGameAndSwitchPlayers();
           }
         }
       },
@@ -190,6 +196,14 @@ class _ScoreScreenState extends State<ScoreScreen> {
                     child: GamesHistoryList(gameState: gameState),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.save),
+                label: const Text('Сохранить игру'),
+                onPressed: _saveGameAndSwitchPlayers,
               ),
             ),
           ],

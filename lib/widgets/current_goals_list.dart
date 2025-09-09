@@ -37,23 +37,27 @@ class _CurrentGoalsListState extends State<CurrentGoalsList> {
           child: Text('Голы в текущей партии', style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         Expanded(
-          child: ListView.builder(
+          child: Scrollbar(
             controller: _scrollController,
-            itemCount: reversedLog.length,
-            itemBuilder: (context, index) {
-              final entry = reversedLog[index];
-              return ListTile(
-                title: Text('Игрок ${entry.player}: +${entry.delta}'),
-                subtitle: Text('${entry.timestamp.hour}:${entry.timestamp.minute}:${entry.timestamp.second}'),
-                trailing: widget.onDelete != null
-                    ? IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        tooltip: 'Удалить гол',
-                        onPressed: () => widget.onDelete!(widget.gameState.scoreLog.length - 1 - index),
-                      )
-                    : null,
-              );
-            },
+            thumbVisibility: true,
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: reversedLog.length,
+              itemBuilder: (context, index) {
+                final entry = reversedLog[index];
+                return ListTile(
+                  title: Text('Игрок ${entry.player}: +${entry.delta}'),
+                  subtitle: Text('${entry.timestamp.hour}:${entry.timestamp.minute}:${entry.timestamp.second}'),
+                  trailing: widget.onDelete != null
+                      ? IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          tooltip: 'Удалить гол',
+                          onPressed: () => widget.onDelete!(widget.gameState.scoreLog.length - 1 - index),
+                        )
+                      : null,
+                );
+              },
+            ),
           ),
         ),
       ],

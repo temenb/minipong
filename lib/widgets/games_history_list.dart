@@ -36,18 +36,22 @@ class _GamesHistoryListState extends State<GamesHistoryList> {
           child: Text('История игр', style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         Expanded(
-          child: ListView.builder(
+          child: Scrollbar(
             controller: _scrollController,
-            reverse: true,
-            itemCount: games.length,
-            itemBuilder: (context, index) {
-              final game = games[index];
-              final gameNumber = games.length - index;
-              return ListTile(
-                title: Text('Игра $gameNumber'),
-                subtitle: Text('Голов: ${game.length}'),
-              );
-            },
+            thumbVisibility: true,
+            child: ListView.builder(
+              controller: _scrollController,
+              reverse: true,
+              itemCount: games.length,
+              itemBuilder: (context, index) {
+                final game = games[index];
+                final gameNumber = games.length - index;
+                return ListTile(
+                  title: Text('Игра $gameNumber'),
+                  subtitle: Text('Голов: ${game.length}'),
+                );
+              },
+            ),
           ),
         ),
       ],
