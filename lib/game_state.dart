@@ -18,10 +18,16 @@ class GameState {
   List<String> players = [];
   bool lock = false;
   final List<int> _scoreOptions = [11, 21, 31];
-  int _selectedScore = 21;
-  int serveSwitchMode = 5;
+  final List<int> _serveSwitchModes = [2, 5, 41];
+  int _selectedScore = 0; // теперь это индекс
 
   List<int> get scoreOptions => List.unmodifiable(_scoreOptions);
+  int get selectedScore => _selectedScore;
+  set selectedScore(int index) {
+    if (index < 0 || index >= _scoreOptions.length) return;
+    _selectedScore = index;
+  }
+  int get serveSwitchMode => _serveSwitchModes[_selectedScore];
 
   int get player1Score => scoreLog.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
   int get player2Score => scoreLog.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
@@ -30,9 +36,7 @@ class GameState {
     if (lock) {
       return 0;
     }
-    // Если замок открыт, вычисляем по serveSwitchMode
     int switches = (totalScore ~/ serveSwitchMode) % 2;
-    // Если switches чётное — первый подающий, нечётное — второй
     return switches;
   }
   int get secPlayer {
@@ -103,11 +107,5 @@ class GameState {
     if (index >= 0 && index < scoreLog.length) {
       scoreLog.removeAt(index);
     }
-  }
-
-  int get selectedScore => _selectedScore;
-  set selectedScore(int value) {
-    _selectedScore = value;
-    serveSwitchMode = (value == 11) ? 2 : 5;
   }
 }

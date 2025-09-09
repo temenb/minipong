@@ -15,15 +15,15 @@ class ScoreLimitDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButton<int>(
       value: gameState.selectedScore,
-      items: gameState.scoreOptions.map((score) {
+      items: List.generate(gameState.scoreOptions.length, (index) {
         return DropdownMenuItem<int>(
-          value: score,
-          child: Text('$score'),
+          value: index,
+          child: Text('${gameState.scoreOptions[index]}'),
         );
-      }).toList(),
-      onChanged: (value) {
-        if (value != null) {
-          gameState.selectedScore = value;
+      }),
+      onChanged: (index) {
+        if (index != null) {
+          gameState.selectedScore = index;
           if (onChanged != null) onChanged!();
         }
       },
