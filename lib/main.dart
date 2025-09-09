@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'game_state.dart'; // новый модуль с логикой
 import 'player_repository.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(const TableTennisScoreApp());
@@ -24,8 +25,44 @@ class TableTennisScoreApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final AudioPlayer _audioPlayer;
+  bool _isPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+    _playMusic();
+  }
+
+  Future<void> _playMusic() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('audio/background.mp3'));
+    setState(() {
+      _isPlaying = true;
+    });
+  }
+
+  Future<void> _pauseMusic() async {
+    await _audioPlayer.pause();
+    setState(() {
+      _isPlaying = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +95,18 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: const Text('Список игроков'),
+            ),
+            const SizedBox(height: 32),
+            IconButton(
+              icon: Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle, size: 48),
+              onPressed: () {
+                if (_isPlaying) {
+                  _pauseMusic();
+                } else {
+                  _playMusic();
+                }
+              },
+              tooltip: _isPlaying ? 'Пауза' : 'Воспроизвести',
             ),
           ],
         ),
