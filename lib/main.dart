@@ -77,7 +77,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
   final GameState game = GameState();
   final FocusNode _focusNode = FocusNode();
   final PlayerRepository repository = PlayerRepository();
-  List<String> allPlayers = [];
+  List<Player> allPlayers = [];
   final ScrollController _scoreScrollController = ScrollController();
 
   @override
@@ -89,8 +89,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
 
   Future<void> _loadPlayers() async {
     allPlayers = await repository.loadAllPlayers();
-    if (game.players.length < 2 && allPlayers.length >= 2) {
-      game.players = [allPlayers[0], allPlayers[1]];
+    if (game.players.length < 2 && allPlayers.where((p) => p.isActive).length >= 2) {
+      final active = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
+      game.players = [active[0], active[1]];
     }
     setState(() {});
   }
@@ -121,6 +122,9 @@ class _ScoreScreenState extends State<ScoreScreen> {
         game.players[0].isNotEmpty &&
         game.players[1].isNotEmpty &&
         game.players[0] != game.players[1];
+
+    // --- ScoreScreen: дропдауны только для активных игроков ---
+    final activeNames = allPlayers.where((p) => p.isActive).map((p) => p.name).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -196,10 +200,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   children: [
                     Text('Игрок ${game.firPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: (game.players.length > game.firPlayer && allPlayers.contains(game.players[game.firPlayer]))
+                      value: (game.players.length > game.firPlayer && activeNames.contains(game.players[game.firPlayer]))
                         ? game.players[game.firPlayer]
                         : null,
-                      items: allPlayers.map((player) {
+                      items: activeNames.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
                           child: Text(player),
@@ -231,10 +235,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   children: [
                     Text('Игрок ${game.secPlayer + 1}:'),
                     DropdownButton<String>(
-                      value: (game.players.length > game.secPlayer && allPlayers.contains(game.players[game.secPlayer]))
+                      value: (game.players.length > game.secPlayer && activeNames.contains(game.players[game.secPlayer]))
                         ? game.players[game.secPlayer]
                         : null,
-                      items: allPlayers.map((player) {
+                      items: activeNames.map((player) {
                         return DropdownMenuItem<String>(
                           value: player,
                           child: Text(player),
@@ -390,7 +394,7 @@ class PlayersScreen extends StatefulWidget {
 
 class _PlayersScreenState extends State<PlayersScreen> {
   final PlayerRepository repository = PlayerRepository();
-  List<String> allPlayers = [];
+  List<Player> allPlayers = [];
 
   @override
   void initState() {
@@ -423,7 +427,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (newName.trim().isNotEmpty && !allPlayers.contains(newName)) {
+              if (newName.trim().isNotEmpty && !allPlayers.any((p) => p.name == newName)) {
                 await repository.addPlayer(newName);
                 await _loadPlayers();
               }
@@ -445,8 +449,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
           : ListView.builder(
               itemCount: allPlayers.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(allPlayers[index]),
+                final player = allPlayers[index];
+                return CheckboxListTile(
+                  title: Text(player.name),
+                  value: player.isActive,
+                  onChanged: (val) async {
+                    await repository.setPlayerActive(player.name, val ?? true);
+                    await _loadPlayers();
+                  },
                 );
               },
             ),
