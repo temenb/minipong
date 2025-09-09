@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Player {
@@ -12,50 +11,43 @@ class Player {
 }
 
 class PlayerRepository {
-  static const String _key = 'all_players_v2';
-  static const String _legacyKey = 'all_players';
+  static const String _storageKey = 'players_names_v2';
+  final List<Player> _players = [];
 
   Future<List<Player>> loadAllPlayers() async {
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getStringList(_key);
-    if (raw != null && raw.isNotEmpty) {
-      // Новый формат: только имена игроков
-      return raw
-          .map((str) => Player.fromJson(Map<String, dynamic>.from(jsonDecode(str))))
-          .toList();
+    final names = prefs.getStringList(_storageKey);
+    _players.clear();
+    if (names != null) {
+      _players.addAll(names.map((name) => Player(name, isActive: true)));
     }
-    // Попробовать старый формат: List<String>
-    final legacyRaw = prefs.getStringList(_legacyKey);
-    if (legacyRaw != null && legacyRaw.isNotEmpty) {
-      final players = legacyRaw.map((name) => Player(name, isActive: true)).toList();
-      await saveAllPlayers(players); // Миграция на новый формат
-      return players;
-    }
-    return [];
+    return List<Player>.from(_players);
   }
 
   Future<void> saveAllPlayers(List<Player> players) async {
     final prefs = await SharedPreferences.getInstance();
-    // Сохраняем только имена игроков, без информации о isActive
-    final raw = players.map((p) => jsonEncode({'name': p.name})).toList();
-    await prefs.setStringList(_key, raw);
+    final names = players.map((p) => p.name).toList();
+    await prefs.setStringList(_storageKey, names);
+    _players
+      ..clear()
+      ..addAll(players);
   }
 
   Future<void> addPlayer(String name) async {
-    final players = await loadAllPlayers();
-    if (players.any((p) => p.name == name)) return;
-    players.add(Player(name));
-    await saveAllPlayers(players);
+    await loadAllPlayers();
+    if (_players.any((p) => p.name == name)) return;
+    _players.add(Player(name));
+    await saveAllPlayers(_players);
   }
 
   Future<void> setPlayerActive(String name, bool isActive) async {
-    // Активность игроков не сохраняется между сессиями
-    // Просто меняем значение в текущем списке, но не сохраняем в SharedPreferences
-    // (удаляем поле isActive из сохранения)
-    final players = await loadAllPlayers();
-    for (var p in players) {
-      if (p.name == name) p.isActive = isActive;
+    await loadAllPlayers();
+    for (var p in _players) {
+      if (p.name == name) {
+        p.isActive = isActive;
+        break;
+      }
     }
-    // НЕ вызываем saveAllPlayers(players);
+    await saveAllPlayers(_players);
   }
 }

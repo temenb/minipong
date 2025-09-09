@@ -500,6 +500,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
     );
   }
 
+  void deletePlayer(int index) async {
+    allPlayers.removeAt(index);
+    await repository.saveAllPlayers(allPlayers);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -510,14 +516,25 @@ class _PlayersScreenState extends State<PlayersScreen> {
               itemCount: allPlayers.length,
               itemBuilder: (context, index) {
                 final player = allPlayers[index];
-                return CheckboxListTile(
-                  title: Text(player.name),
-                  value: player.isActive,
-                  onChanged: (val) {
-                    setState(() {
-                      player.isActive = val ?? false;
-                    });
-                  },
+                return Row(
+                  children: [
+                    Expanded(
+                      child: CheckboxListTile(
+                        title: Text(player.name),
+                        value: player.isActive,
+                        onChanged: (val) {
+                          setState(() {
+                            player.isActive = val ?? false;
+                          });
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      tooltip: 'Удалить игрока',
+                      onPressed: () => deletePlayer(index),
+                    ),
+                  ],
                 );
               },
             ),
