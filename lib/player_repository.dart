@@ -11,15 +11,20 @@ class Player {
 }
 
 class PlayerRepository {
+  static final PlayerRepository instance = PlayerRepository._internal();
+  PlayerRepository._internal();
   static const String _storageKey = 'players_names_v2';
   final List<Player> _players = [];
 
   Future<List<Player>> loadAllPlayers() async {
     final prefs = await SharedPreferences.getInstance();
     final names = prefs.getStringList(_storageKey);
+    if (_players.isNotEmpty) {
+      return List<Player>.from(_players);
+    }
     _players.clear();
     if (names != null) {
-      _players.addAll(names.map((name) => Player(name, isActive: true)));
+      _players.addAll(names.map((name) => Player(name, isActive: false)));
     }
     return List<Player>.from(_players);
   }
