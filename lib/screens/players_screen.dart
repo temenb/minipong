@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:minipong/player_repository.dart';
+import 'package:minipong/repositories/player_repository.dart';
 
 class PlayersScreen extends StatefulWidget {
   const PlayersScreen({super.key});

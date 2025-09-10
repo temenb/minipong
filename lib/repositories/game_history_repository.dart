@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/game_models.dart';
+import 'package:minipong/models/game_models.dart';
 
 class GameHistoryRepository {
   static const String _storageKey = 'savedGames';
@@ -21,4 +21,3 @@ class GameHistoryRepository {
     await prefs.setStringList(_storageKey, gamesJson);
   }
 }
-

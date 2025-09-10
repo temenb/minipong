@@ -1,5 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:minipong/player_repository.dart';
+import 'package:minipong/repositories/player_repository.dart';
 
 import 'models/game_models.dart';
 import 'repositories/game_history_repository.dart';
