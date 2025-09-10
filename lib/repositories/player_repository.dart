@@ -12,7 +12,7 @@ class Player {
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'isActive': isActive};
 
   static Player fromJson(Map<String, dynamic> json) =>
-      Player(json['name'], id: json['id'], isActive: json['isActive'] ?? false);
+      Player(json['name'], id: json['id'], isActive: json['isActive'] ?? true);
 }
 
 class PlayerRepository {
@@ -28,14 +28,19 @@ class PlayerRepository {
     final playersJson = prefs.getStringList(_storageKey);
     _players.clear();
     if (playersJson != null) {
-      _players.addAll(playersJson.map((str) => Player.fromJson(Map<String, dynamic>.from(jsonDecode(str)))));
+      _players.addAll(playersJson.map((str) {
+        final player = Player.fromJson(Map<String, dynamic>.from(jsonDecode(str)));
+        // isActive всегда false при загрузке из хранилища
+        return Player(player.name, id: player.id, isActive: false);
+      }));
     }
     return List<Player>.from(_players);
   }
 
   Future<void> saveAllPlayers(List<Player> players) async {
     final prefs = await SharedPreferences.getInstance();
-    final playersJson = players.map((p) => jsonEncode(p.toJson())).toList();
+    // Сохраняем только name и id, isActive игнорируем
+    final playersJson = players.map((p) => jsonEncode({'id': p.id, 'name': p.name})).toList();
     await prefs.setStringList(_storageKey, playersJson);
     _players
       ..clear()
