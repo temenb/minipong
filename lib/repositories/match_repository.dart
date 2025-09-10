@@ -1,5 +1,6 @@
 import 'package:minipong/entity/match.dart';
 import 'package:minipong/repositories/repository.dart';
+import 'package:minipong/repositories/storage_service.dart';
 
 class MatchRepository extends Repository<Match> {
   static final MatchRepository instance = MatchRepository._internal();
@@ -24,5 +25,11 @@ class MatchRepository extends Repository<Match> {
   }
 
   void clear() => super.clear();
+  /// Сохраняет текущий список матчей в StorageService
+  Future<void> persist() async {
+    await StorageService.instance.saveList(
+      'matches',
+      items.map((m) => m.toJson()).toList(),
+    );
+  }
 }
-

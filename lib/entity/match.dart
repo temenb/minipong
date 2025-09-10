@@ -1,6 +1,7 @@
 class Match {
   final String id;
-  final List<String> battleIds;
+  final List<Battle> battle;
+  final DateTime createdAt;
   final DateTime createdAt;
 
   Match({
