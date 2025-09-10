@@ -98,10 +98,13 @@ class GameState {
   Future<void> saveCurrentGame() async {
     String winner = player1Score > player2Score ? (playerIds.isNotEmpty ? playerIds[0] : 'Player 1') : (playerIds.length > 1 ? playerIds[1] : 'Player 2');
     String loser = player1Score < player2Score ? (playerIds.isNotEmpty ? playerIds[0] : 'Player 1') : (playerIds.length > 1 ? playerIds[1] : 'Player 2');
+    // Сохраняем копию игроков, участвовавших в игре
+    List<Player> playersInGame = playerIds.map((id) => playerRepository.getPlayerById(id)).whereType<Player>().toList();
     final entry = GameHistoryEntry(
       winner: winner,
       loser: loser,
       scoreLog: List<ScoreLogEntry>.from(scoreLog),
+      players: playersInGame,
     );
     await gameHistoryRepository.saveCurrentGame(entry);
     savedGames.insert(0, entry);

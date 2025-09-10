@@ -12,7 +12,7 @@ class Player {
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'isActive': isActive};
 
   static Player fromJson(Map<String, dynamic> json) =>
-      Player(json['name'], id: json['id'], isActive: json['isActive'] ?? true);
+      Player(json['name'], id: json['id'], isActive: json['isActive'] ?? false);
 }
 
 class PlayerRepository {

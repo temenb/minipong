@@ -1,3 +1,5 @@
+import 'package:minipong/repositories/player_repository.dart';
+
 class ScoreLogEntry {
   final int player;
   final int delta;
@@ -11,8 +13,9 @@ class GameHistoryEntry {
   final String winner;
   final String loser;
   final List<ScoreLogEntry> scoreLog;
+  final List<Player> players;
 
-  GameHistoryEntry({required this.winner, required this.loser, required this.scoreLog});
+  GameHistoryEntry({required this.winner, required this.loser, required this.scoreLog, required this.players});
 
   Map<String, dynamic> toJson() => {
         'winner': winner,
@@ -22,6 +25,7 @@ class GameHistoryEntry {
               'delta': e.delta,
               'timestamp': e.timestamp.toIso8601String(),
             }).toList(),
+        'players': players.map((p) => p.toJson()).toList(),
       };
 
   static GameHistoryEntry fromJson(Map<String, dynamic> json) {
@@ -33,7 +37,7 @@ class GameHistoryEntry {
         e['delta'],
         DateTime.parse(e['timestamp']),
       )).toList(),
+      players: (json['players'] as List).map((p) => Player.fromJson(p)).toList(),
     );
   }
 }
-
