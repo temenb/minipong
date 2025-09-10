@@ -46,7 +46,7 @@ class _CurrentGoalsListState extends State<CurrentGoalsList> {
               itemBuilder: (context, index) {
                 final entry = reversedLog[index];
                 return ListTile(
-                  title: Text('Игрок ${entry.player}: +${entry.delta}'),
+                  title: Text('Игрок ${widget.gameState.activePlayerNames.length > entry.player ? widget.gameState.activePlayerNames[entry.player] : entry.player}: +${entry.delta}'),
                   subtitle: Text('${entry.timestamp.hour}:${entry.timestamp.minute}:${entry.timestamp.second}'),
                   trailing: widget.onDelete != null
                       ? IconButton(
