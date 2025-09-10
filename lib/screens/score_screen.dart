@@ -93,7 +93,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       gameState.playerIds[gameState.firPlayer] = selectedId;
                     });
                   },
-                  score: gameState.player1Score,
+                  score: gameState.firPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () async {
                     await gameState.addGoalToPlayer(gameState.firPlayer);
                     setState(() {});
@@ -147,7 +147,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                       gameState.playerIds[gameState.secPlayer] = selectedId;
                     });
                   },
-                  score: gameState.player2Score,
+                  score: gameState.secPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () async {
                     await gameState.addGoalToPlayer(gameState.secPlayer);
                     setState(() {});

@@ -130,12 +130,10 @@ class GameState {
   }
 
   Future<void> saveGameAndSwitchPlayers() async {
-    // int p1Score = player1Score;
-    // int p2Score = player2Score;
-    // int winnerIdx = p1Score > p2Score ? 0 : 1;
-    // int loserIdx = p1Score > p2Score ? 1 : 0;
-    // String winner = players[winnerIdx];
-    // String loser = players[loserIdx];
+    // int winnerIdx = player1Score > player2Score ? 0 : 1;
+    // int loserIdx = winnerIdx == 0 ? 1 : 0;
+    // String winner = playerIds[winnerIdx];
+    // String loser = playerIds[loserIdx];
 
     await saveCurrentGame();
     reset();
@@ -143,15 +141,15 @@ class GameState {
     // // Победитель становится первым
     // setSelectedPlayer1(winner);
     // // Найти следующего активного игрока после проигравшего
-    // final activePlayers = activePlayerNames;
-    // int loserActiveIdx = activePlayers.indexOf(loser);
-    // String nextPlayer;
-    // if (loserActiveIdx != -1 && loserActiveIdx + 1 < activePlayers.length) {
-    //   nextPlayer = activePlayers[loserActiveIdx + 1];
+    // final activePlayerIds = playerRepository.activePlayerIds;
+    // int loserActiveIdx = activePlayerIds.indexOf(loser);
+    // String nextPlayerId;
+    // if (loserActiveIdx != -1 && loserActiveIdx + 1 < activePlayerIds.length) {
+    //   nextPlayerId = activePlayerIds[loserActiveIdx + 1];
     // } else {
-    //   nextPlayer = loser;
+    //   nextPlayerId = loser;
     // }
-    // setSelectedPlayer1(nextPlayer);
+    // setSelectedPlayer1(nextPlayerId);
   }
 
 
