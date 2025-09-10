@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minipong/game_state.dart';
+import 'package:minipong/repositories/player_repository.dart';
 
 class GamesHistoryList extends StatefulWidget {
   final GameState gameState;
@@ -47,13 +48,21 @@ class _GamesHistoryListState extends State<GamesHistoryList> {
               itemCount: games.length,
               itemBuilder: (context, index) {
                 final game = games[index];
-                final gameNumber = index + 1; // Исправлено: теперь "Игра 1" — самая первая, "Игра N" — самая последняя
-                final winnerName = widget.gameState.playerRepository.getPlayerById(game.winner)?.name ?? game.winner;
-                final loserName = widget.gameState.playerRepository.getPlayerById(game.loser)?.name ?? game.loser;
+                final gameNumber = index + 1;
+                final winnerPlayer = game.players.firstWhere(
+                  (p) => p.id == game.winner,
+                  orElse: () => game.players.isNotEmpty ? game.players[0] : Player('', id: '', isActive: false)
+                );
+                final loserPlayer = game.players.firstWhere(
+                  (p) => p.id == game.loser,
+                  orElse: () => game.players.length > 1 ? game.players[1] : Player('', id: '', isActive: false)
+                );
+                final winnerName = winnerPlayer.name.isNotEmpty ? winnerPlayer.name : game.winner;
+                final loserName = loserPlayer.name.isNotEmpty ? loserPlayer.name : game.loser;
+                final player0Name = game.players.isNotEmpty ? game.players[0].name : 'Игрок 1';
+                final player1Name = game.players.length > 1 ? game.players[1].name : 'Игрок 2';
                 int player0Goals = game.scoreLog.where((e) => e.player == 0).length;
                 int player1Goals = game.scoreLog.where((e) => e.player == 1).length;
-                final player0Name = widget.gameState.playerRepository.getPlayerById(widget.gameState.playerIds[0])?.name ?? 'Игрок 1';
-                final player1Name = widget.gameState.playerRepository.getPlayerById(widget.gameState.playerIds.length > 1 ? widget.gameState.playerIds[1] : '')?.name ?? 'Игрок 2';
                 return ListTile(
                   title: Text('Игра $gameNumber'),
                   subtitle: Text(
