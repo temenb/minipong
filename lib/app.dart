@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
                 textStyle: const TextStyle(fontSize: 32),
               ),
               onPressed: () {
-                GameState.instance.reset();
+                GameState.instance.init();
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const ScoreScreen()),
                 );

@@ -13,14 +13,44 @@ class ScoreLogEntry {
     : timestamp = ts ?? DateTime.now();
 }
 
+class GameHistoryEntry {
+  final String winner;
+  final String loser;
+  final List<ScoreLogEntry> scoreLog;
+
+  GameHistoryEntry({required this.winner, required this.loser, required this.scoreLog});
+
+  Map<String, dynamic> toJson() => {
+    'winner': winner,
+    'loser': loser,
+    'scoreLog': scoreLog.map((e) => {
+      'player': e.player,
+      'delta': e.delta,
+      'timestamp': e.timestamp.toIso8601String(),
+    }).toList(),
+  };
+
+  static GameHistoryEntry fromJson(Map<String, dynamic> json) {
+    return GameHistoryEntry(
+      winner: json['winner'],
+      loser: json['loser'],
+      scoreLog: (json['scoreLog'] as List).map((e) => ScoreLogEntry(
+        e['player'],
+        e['delta'],
+        DateTime.parse(e['timestamp']),
+      )).toList(),
+    );
+  }
+}
+
 class GameState {
   static final GameState instance = GameState._internal();
 
   GameState._internal();
 
   List<ScoreLogEntry> scoreLog = [];
-  List<List<ScoreLogEntry>> savedGames = [];
-  List<List<ScoreLogEntry>> sessionGames = [];
+  List<GameHistoryEntry> savedGames = [];
+  List<GameHistoryEntry> sessionGames = [];
   List<String> players = [];
   bool lock = false;
   final List<int> _scoreOptions = [11, 21, 31];
@@ -71,8 +101,6 @@ class GameState {
     return serverPlayer == 1 ? 0 : 1;
   }
 
-  int? moreLessPlayer;
-
   Future<void> loadPlayers() async {
     final prefs = await SharedPreferences.getInstance();
     final loadedPlayers = prefs.getStringList('players') ?? [];
@@ -103,43 +131,33 @@ class GameState {
     final prefs = await SharedPreferences.getInstance();
     final gamesJson = prefs.getStringList('savedGames') ?? [];
     savedGames = gamesJson.map((game) {
-      final list = jsonDecode(game) as List;
-      return list
-          .map(
-            (e) => ScoreLogEntry(
-              e['player'],
-              e['delta'],
-              DateTime.parse(e['timestamp']),
-            ),
-          )
-          .toList();
+      final map = jsonDecode(game) as Map<String, dynamic>;
+      return GameHistoryEntry.fromJson(map);
     }).toList();
     sessionGames = [];
   }
 
   Future<void> saveCurrentGame() async {
+    String winner = player1Score > player2Score ? (players.isNotEmpty ? players[0] : 'Player 1') : (players.length > 1 ? players[1] : 'Player 2');
+    String loser = player1Score < player2Score ? (players.isNotEmpty ? players[0] : 'Player 1') : (players.length > 1 ? players[1] : 'Player 2');
+    final entry = GameHistoryEntry(
+      winner: winner,
+      loser: loser,
+      scoreLog: List<ScoreLogEntry>.from(scoreLog),
+    );
     final prefs = await SharedPreferences.getInstance();
-    final game = scoreLog
-        .map(
-          (e) => {
-            'player': e.player,
-            'delta': e.delta,
-            'timestamp': e.timestamp.toIso8601String(),
-          },
-        )
-        .toList();
     final gamesJson = prefs.getStringList('savedGames') ?? [];
-    gamesJson.add(jsonEncode(game));
+    gamesJson.insert(0, jsonEncode(entry.toJson())); // новые сверху
     await prefs.setStringList('savedGames', gamesJson);
-    savedGames.add(List<ScoreLogEntry>.from(scoreLog));
-    sessionGames.add(List<ScoreLogEntry>.from(scoreLog));
+    savedGames.insert(0, entry);
+    sessionGames.insert(0, entry);
     scoreLog.clear();
   }
 
   final AudioPlayer _audioPlayer = AudioPlayer();
   DateTime? _lastGoalTime;
 
-  void addGoalToPlayer(int playerNum) {
+  Future<void> addGoalToPlayer(int playerNum) async {
     final now = DateTime.now();
     if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 2000) {
       // return;
@@ -153,10 +171,41 @@ class GameState {
       _audioPlayer.play(AssetSource('audio/ping2.mp3'));
     }
 
+    print('============================================================================================================================================');
+    print('[DEBUG] addGoalToPlayer: playerNum=$playerNum, player1Score=$player1Score, player2Score=$player2Score, totalScore=$totalScore');
+    print('[DEBUG] isGameFinished: ${isGameFinished()}');
     if (isGameFinished()) {
-      saveCurrentGame();
+      await saveGameAndSwitchPlayers();
     }
   }
+
+  Future<void> saveGameAndSwitchPlayers() async {
+    int p1Score = player1Score;
+    int p2Score = player2Score;
+    int winnerIdx = p1Score > p2Score ? 0 : 1;
+    int loserIdx = p1Score > p2Score ? 1 : 0;
+    String winner = players[winnerIdx];
+    String loser = players[loserIdx];
+    int selectedScoreOption = selectedScore;
+
+    await saveCurrentGame();
+    reset();
+
+    // Победитель становится первым
+    setSelectedPlayer1(winner);
+    // Найти следующего активного игрока после проигравшего
+    final activePlayers = activePlayerNames;
+    int loserActiveIdx = activePlayers.indexOf(loser);
+    String nextPlayer;
+    if (loserActiveIdx != -1 && loserActiveIdx + 1 < activePlayers.length) {
+      nextPlayer = activePlayers[loserActiveIdx + 1];
+    } else {
+      nextPlayer = loser;
+    }
+    setSelectedPlayer1(nextPlayer);
+    selectedScore = selectedScoreOption;
+  }
+
 
   void deleteLogEntry(int index) {
 
@@ -166,35 +215,25 @@ class GameState {
   }
 
   bool isGameFinished() {
-    print('==============================================================================================');
-    print('[DEBUG] player1Score: '
-        '[33m'
-        '[1m'
-        '[0m' + player1Score.toString() +
-        ', player2Score: ' + player2Score.toString() +
-        ', selectedScore: ' + _selectedScore.toString() +
-        ', scoreLimit: ' + _scoreOptions[_selectedScore].toString());
-    print('[DEBUG] abs diff: ' + (player1Score - player2Score).abs().toString());
     bool finished = (
         player1Score >= _scoreOptions[_selectedScore] ||
         player2Score >= _scoreOptions[_selectedScore]
     ) && ((player1Score - player2Score).abs() >= 2);
-    print(player1Score >= _scoreOptions[_selectedScore]);
-    print(player2Score >= _scoreOptions[_selectedScore]);
-    print((player1Score - player2Score).abs() >= 2);
-    print(finished);
-    print('[DEBUG] isGameFinished: ' + finished.toString());
     return finished;
   }
 
-  void reset() {
-    scoreLog.clear();
+  void init() {
+    reset();
     _selectedScore = 1;
-    // Заполняем players первыми двумя активными игроками
     final active = playerRepository.activePlayerNames;
     players = [];
     if (active.isNotEmpty) players.add(active[0]);
     if (active.length > 1) players.add(active[1]);
+  }
+
+  void reset() {
+    scoreLog.clear();
+    sessionGames.clear(); // очищаем историю игр текущей сессии
   }
 
   final PlayerRepository playerRepository = PlayerRepository.instance;

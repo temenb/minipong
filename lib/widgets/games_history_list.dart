@@ -48,7 +48,11 @@ class _GamesHistoryListState extends State<GamesHistoryList> {
                 final gameNumber = games.length - index;
                 return ListTile(
                   title: Text('Игра $gameNumber'),
-                  subtitle: Text('Голов: ${game.length}'),
+                  subtitle: Text(
+                    'Голов: ${game.scoreLog.length}\n'
+                    'Победитель: ${game.winner}\n'
+                    'Проигравший: ${game.loser}'
+                  ),
                 );
               },
             ),
