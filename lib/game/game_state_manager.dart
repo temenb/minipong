@@ -10,6 +10,7 @@ class GameStateManager extends ChangeNotifier {
 
   Match? _currentMatch;
   final List<Char> _selectedChars = [];
+  final Set<String> activePlayerIds = {};
 
   GameStateManager() {
     init();
@@ -43,6 +44,29 @@ class GameStateManager extends ChangeNotifier {
       ..clear()
       ..addAll(chars);
     MatchRepository.instance.addMatch(newMatch);
+    notifyListeners();
+  }
+
+  bool isPlayerActive(String id) => activePlayerIds.contains(id);
+
+  void setPlayerActive(String id, bool active) {
+    if (active) {
+      activePlayerIds.add(id);
+    } else {
+      activePlayerIds.remove(id);
+    }
+    notifyListeners();
+  }
+
+  void addPlayer(Char char) {
+    CharRepository.instance.addChar(char);
+    activePlayerIds.add(char.id);
+    notifyListeners();
+  }
+
+  void removePlayer(String id) {
+    CharRepository.instance.remove(id);
+    activePlayerIds.remove(id);
     notifyListeners();
   }
 }
