@@ -50,21 +50,25 @@ class GameState {
     if (lock) {
       return 0;
     }
-    int switches = (totalScore ~/ serveSwitchMode) % 2;
-    return switches;
+    return serverPlayer;
   }
 
   int get secPlayer {
     return firPlayer == 1 ? 0 : 1;
   }
 
-  int get greenPlayer {
-    int switches = (totalScore ~/ serveSwitchMode) % 2;
+  int get serverPlayer {
+    int scoreLimit = _scoreOptions[selectedScore] - 1;
+    bool moreOrLess = (totalScore >= 2*scoreLimit);
+
+    int score = moreOrLess? totalScore - 2*scoreLimit : totalScore;
+    int pointsPerServeSwitch = moreOrLess? 1 : _serveSwitchModes[selectedScore];
+    int switches = (score ~/ pointsPerServeSwitch) % 2;
     return switches;
   }
 
-  int get pinkPlayer {
-    return greenPlayer == 1 ? 0 : 1;
+  int get receiverPlayer {
+    return serverPlayer == 1 ? 0 : 1;
   }
 
   int? moreLessPlayer;
@@ -138,26 +142,19 @@ class GameState {
   void addGoalToPlayer(int playerNum) {
     final now = DateTime.now();
     if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 2000) {
-      return;
+      // return;
     }
     _lastGoalTime = now;
 
-    int server = greenPlayer;
     scoreLog.add(ScoreLogEntry(playerNum, 1));
     if (playerNum == 1) {
       _audioPlayer.play(AssetSource('audio/ping1.mp3'));
     } else if (playerNum == 2) {
       _audioPlayer.play(AssetSource('audio/ping2.mp3'));
     }
-    recalculateMoreOrLess(server);
-  }
 
-  void recalculateMoreOrLess(int server) {
-    int scoreLimit = _scoreOptions[selectedScore];
-    if ((player1Score >= scoreLimit - 1 || player2Score >= scoreLimit - 1)) {
-      moreLessPlayer = moreLessPlayer?? (server + 1) ~/ 2;
-    } else {
-      moreLessPlayer = null;
+    if (isGameFinished()) {
+      saveCurrentGame();
     }
   }
 
@@ -169,7 +166,25 @@ class GameState {
   }
 
   bool isGameFinished() {
-    return (moreLessPlayer == null)? (totalScore >= _scoreOptions[_selectedScore]) : ((player1Score-player2Score).abs() >= 2);
+    print('==============================================================================================');
+    print('[DEBUG] player1Score: '
+        '[33m'
+        '[1m'
+        '[0m' + player1Score.toString() +
+        ', player2Score: ' + player2Score.toString() +
+        ', selectedScore: ' + _selectedScore.toString() +
+        ', scoreLimit: ' + _scoreOptions[_selectedScore].toString());
+    print('[DEBUG] abs diff: ' + (player1Score - player2Score).abs().toString());
+    bool finished = (
+        player1Score >= _scoreOptions[_selectedScore] ||
+        player2Score >= _scoreOptions[_selectedScore]
+    ) && ((player1Score - player2Score).abs() >= 2);
+    print(player1Score >= _scoreOptions[_selectedScore]);
+    print(player2Score >= _scoreOptions[_selectedScore]);
+    print((player1Score - player2Score).abs() >= 2);
+    print(finished);
+    print('[DEBUG] isGameFinished: ' + finished.toString());
+    return finished;
   }
 
   void reset() {

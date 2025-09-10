@@ -133,8 +133,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                           gameState.addGoalToPlayer(gameState.firPlayer + 1);
                           setState(() {});
                         },
-                        isGreen: gameState.greenPlayer == gameState.firPlayer,
-                        isPink: gameState.pinkPlayer == gameState.firPlayer,
+                        isGreen: gameState.serverPlayer == gameState.firPlayer,
+                        isPink: gameState.receiverPlayer == gameState.firPlayer,
                         enabled: !gameState.isGameFinished(),
                         dropdownEnabled: gameState.totalScore == 0,
                       ),
@@ -184,8 +184,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                           gameState.addGoalToPlayer(gameState.secPlayer + 1);
                           setState(() {});
                         },
-                        isGreen: gameState.greenPlayer == gameState.secPlayer,
-                        isPink: gameState.pinkPlayer == gameState.secPlayer,
+                        isGreen: gameState.serverPlayer == gameState.secPlayer,
+                        isPink: gameState.receiverPlayer == gameState.secPlayer,
                         enabled: !gameState.isGameFinished(),
                         dropdownEnabled: gameState.totalScore == 0,
                       ),
