@@ -1,15 +1,18 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class Player {
+  final String id;
   final String name;
   bool isActive;
 
-  Player(this.name, {this.isActive = true});
+  Player(this.name, {String? id, this.isActive = true}) : id = id ?? Uuid().v4();
 
-  Map<String, dynamic> toJson() => {'name': name, 'isActive': isActive};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'isActive': isActive};
 
   static Player fromJson(Map<String, dynamic> json) =>
-      Player(json['name'], isActive: json['isActive'] ?? true);
+      Player(json['name'], id: json['id'], isActive: json['isActive'] ?? true);
 }
 
 class PlayerRepository {
@@ -17,26 +20,23 @@ class PlayerRepository {
 
   PlayerRepository._internal();
 
-  static const String _storageKey = 'players_names_v2';
+  static const String _storageKey = 'players_v3';
   final List<Player> _players = [];
 
   Future<List<Player>> loadAllPlayers() async {
     final prefs = await SharedPreferences.getInstance();
-    final names = prefs.getStringList(_storageKey);
-    if (_players.isNotEmpty) {
-      return List<Player>.from(_players);
-    }
+    final playersJson = prefs.getStringList(_storageKey);
     _players.clear();
-    if (names != null) {
-      _players.addAll(names.map((name) => Player(name, isActive: true)));
+    if (playersJson != null) {
+      _players.addAll(playersJson.map((str) => Player.fromJson(Map<String, dynamic>.from(jsonDecode(str)))));
     }
     return List<Player>.from(_players);
   }
 
   Future<void> saveAllPlayers(List<Player> players) async {
     final prefs = await SharedPreferences.getInstance();
-    final names = players.map((p) => p.name).toList();
-    await prefs.setStringList(_storageKey, names);
+    final playersJson = players.map((p) => jsonEncode(p.toJson())).toList();
+    await prefs.setStringList(_storageKey, playersJson);
     _players
       ..clear()
       ..addAll(players);
@@ -49,10 +49,10 @@ class PlayerRepository {
     await saveAllPlayers(_players);
   }
 
-  Future<void> setPlayerActive(String name, bool isActive) async {
+  Future<void> setPlayerActive(String id, bool isActive) async {
     await loadAllPlayers();
     for (var p in _players) {
-      if (p.name == name) {
+      if (p.id == id) {
         p.isActive = isActive;
         break;
       }
@@ -60,6 +60,16 @@ class PlayerRepository {
     await saveAllPlayers(_players);
   }
 
-  List<String> get activePlayerNames =>
-      _players.where((p) => p.isActive).map((p) => p.name).toList();
+  Player? getPlayerById(String id) {
+    if (id.isEmpty) return null;
+    try {
+      return _players.firstWhere((p) => p.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<Player> get activePlayers => _players.where((p) => p.isActive).toList();
+  List<String> get activePlayerNames => activePlayers.map((p) => p.name).toList();
+  List<String> get activePlayerIds => activePlayers.map((p) => p.id).toList();
 }

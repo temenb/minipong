@@ -84,10 +84,15 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Виджет для firPlayer
                 PlayerScoreWidget(
                   playerNames: gameState.activePlayerNames,
-                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players[gameState.firPlayer == 0 ? 0 : 1]),
+                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(
+                    gameState.playerRepository.getPlayerById(
+                      gameState.playerIds[gameState.firPlayer == 0 ? 0 : 1],
+                    )?.name ?? ''
+                  ),
                   onPlayerChanged: (index) {
                     setState(() {
-                      gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
+                      final selectedId = gameState.playerRepository.activePlayers[index].id;
+                      gameState.setSelectedPlayer1(selectedId);
                     });
                   },
                   score: gameState.firPlayer == 0 ? gameState.player1Score : gameState.player2Score,
@@ -111,10 +116,10 @@ class _ScoreScreenState extends State<ScoreScreen> {
                         onPressed: gameState.totalScore == 0
                             ? () {
                                 setState(() {
-                                  if (gameState.players.length > 1) {
-                                    final tmp = gameState.players[0];
-                                    gameState.players[0] = gameState.players[1];
-                                    gameState.players[1] = tmp;
+                                  if (gameState.playerIds.length > 1) {
+                                    final tmp = gameState.playerIds[0];
+                                    gameState.playerIds[0] = gameState.playerIds[1];
+                                    gameState.playerIds[1] = tmp;
                                   }
                                 });
                               }
@@ -132,16 +137,17 @@ class _ScoreScreenState extends State<ScoreScreen> {
                     ),
                   ],
                 ),
-                // Виджет для secPlayer
                 PlayerScoreWidget(
                   playerNames: gameState.activePlayerNames,
-                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players[gameState.firPlayer == 0 ? 1 : 0]),
+                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(
+                    gameState.playerRepository.getPlayerById(
+                      gameState.playerIds[gameState.firPlayer == 0 ? 1 : 0],
+                    )?.name ?? ''
+                  ),
                   onPlayerChanged: (index) {
                     setState(() {
-
-                      print('====================================================================================================================');
-                      print(gameState.activePlayerNames[index]);
-                      gameState.setSelectedPlayer2(gameState.activePlayerNames[index]);
+                      final selectedId = gameState.playerRepository.activePlayers[index].id;
+                      gameState.setSelectedPlayer2(selectedId);
                     });
                   },
                   score: gameState.secPlayer == 0 ? gameState.player1Score : gameState.player2Score,

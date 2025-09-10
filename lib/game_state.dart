@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:minipong/player_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/game_models.dart';
 import 'repositories/game_history_repository.dart';
@@ -19,7 +16,7 @@ class GameState {
   List<ScoreLogEntry> scoreLog = [];
   List<GameHistoryEntry> savedGames = [];
   List<GameHistoryEntry> sessionGames = [];
-  List<String> players = [];
+  List<String> playerIds = [];
   bool lock = false;
   final List<int> _scoreOptions = [11, 21, 31];
   final List<int> _serveSwitchModes = [2, 5, 5];
@@ -70,30 +67,27 @@ class GameState {
   }
 
   Future<void> loadPlayers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final loadedPlayers = prefs.getStringList('players') ?? [];
-    players = loadedPlayers;
+    await playerRepository.loadAllPlayers();
+    playerIds = playerRepository.activePlayerIds;
   }
 
-  Future<void> addPlayer(int index, String name) async {
-    if (name.trim().isEmpty) return;
-    final prefs = await SharedPreferences.getInstance();
-    while (players.length <= index) {
-      players.add('');
-    }
-    players[index] = name;
-    await prefs.setStringList('players', players);
+  Future<void> addPlayer(String name) async {
+    await playerRepository.addPlayer(name);
+    await loadPlayers();
   }
 
-  void setSelectedPlayer1(String name) {
+  void setSelectedPlayer1(String id) {
     if (totalScore > 0) return;
-    if (players.isNotEmpty) players[0] = name;
+    if (playerIds.isNotEmpty) playerIds[0] = id;
   }
 
-  void setSelectedPlayer2(String name) {
+  void setSelectedPlayer2(String id) {
     if (totalScore > 0) return;
-    if (players.length > 1) players[1] = name;
+    if (playerIds.length > 1) playerIds[1] = id;
   }
+
+  String get player1Name => playerRepository.getPlayerById(playerIds.isNotEmpty ? playerIds[0] : '')?.name ?? 'Player 1';
+  String get player2Name => playerRepository.getPlayerById(playerIds.length > 1 ? playerIds[1] : '')?.name ?? 'Player 2';
 
   Future<void> loadSavedGames() async {
     savedGames = await gameHistoryRepository.loadSavedGames();
@@ -101,8 +95,8 @@ class GameState {
   }
 
   Future<void> saveCurrentGame() async {
-    String winner = player1Score > player2Score ? (players.isNotEmpty ? players[0] : 'Player 1') : (players.length > 1 ? players[1] : 'Player 2');
-    String loser = player1Score < player2Score ? (players.isNotEmpty ? players[0] : 'Player 1') : (players.length > 1 ? players[1] : 'Player 2');
+    String winner = player1Score > player2Score ? (playerIds.isNotEmpty ? playerIds[0] : 'Player 1') : (playerIds.length > 1 ? playerIds[1] : 'Player 2');
+    String loser = player1Score < player2Score ? (playerIds.isNotEmpty ? playerIds[0] : 'Player 1') : (playerIds.length > 1 ? playerIds[1] : 'Player 2');
     final entry = GameHistoryEntry(
       winner: winner,
       loser: loser,
@@ -111,10 +105,8 @@ class GameState {
     await gameHistoryRepository.saveCurrentGame(entry);
     savedGames.insert(0, entry);
     sessionGames.insert(0, entry);
-    scoreLog.clear();
   }
 
-  final AudioPlayer _audioPlayer = AudioPlayer();
   DateTime? _lastGoalTime;
 
   Future<void> addGoalToPlayer(int playerNum) async {
@@ -129,7 +121,7 @@ class GameState {
 
     print('============================================================================================================================================');
     print('[DEBUG] addGoalToPlayer: playerNum=$playerNum, player1Score=$player1Score, player2Score=$player2Score, totalScore=$totalScore');
-    print('[DEBUG] players: $players');
+    print('[DEBUG] players: $playerIds');
     print('[DEBUG] firPlayer: $firPlayer, secPlayer: $secPlayer');
     print('[DEBUG] isGameFinished: ${isGameFinished()}');
     if (isGameFinished()) {
@@ -181,11 +173,8 @@ class GameState {
   void init() {
     reset();
     _selectedScore = 1;
-    final active = playerRepository.activePlayerNames;
-    players = [];
-    if (active.isNotEmpty) players.add(active[0]);
-    if (active.length > 1) players.add(active[1]);
-    sessionGames.clear(); // очищаем историю игр текущей сессии
+    playerIds = playerRepository.activePlayerIds;
+    sessionGames.clear();
   }
 
   void reset() {
