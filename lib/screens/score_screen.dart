@@ -84,18 +84,16 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Виджет для firPlayer
                 PlayerScoreWidget(
                   playerNames: gameState.activePlayerNames,
-                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(
-                    gameState.playerRepository.getPlayerById(
-                      gameState.playerIds[gameState.firPlayer == 0 ? 0 : 1],
-                    )?.name ?? ''
+                  selectedPlayerIndex: gameState.playerRepository.activePlayerIds.indexOf(
+                    gameState.playerIds[gameState.firPlayer]
                   ),
                   onPlayerChanged: (index) {
                     setState(() {
-                      final selectedId = gameState.playerRepository.activePlayers[index].id;
-                      gameState.setSelectedPlayer1(selectedId);
+                      final selectedId = gameState.playerRepository.activePlayerIds[index];
+                      gameState.playerIds[gameState.firPlayer] = selectedId;
                     });
                   },
-                  score: gameState.firPlayer == 0 ? gameState.player1Score : gameState.player2Score,
+                  score: gameState.player1Score,
                   onAddScore: () async {
                     await gameState.addGoalToPlayer(gameState.firPlayer);
                     setState(() {});
@@ -137,20 +135,19 @@ class _ScoreScreenState extends State<ScoreScreen> {
                     ),
                   ],
                 ),
+                // Виджет для secPlayer
                 PlayerScoreWidget(
                   playerNames: gameState.activePlayerNames,
-                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(
-                    gameState.playerRepository.getPlayerById(
-                      gameState.playerIds[gameState.firPlayer == 0 ? 1 : 0],
-                    )?.name ?? ''
+                  selectedPlayerIndex: gameState.playerRepository.activePlayerIds.indexOf(
+                    gameState.playerIds[gameState.secPlayer]
                   ),
                   onPlayerChanged: (index) {
                     setState(() {
-                      final selectedId = gameState.playerRepository.activePlayers[index].id;
-                      gameState.setSelectedPlayer2(selectedId);
+                      final selectedId = gameState.playerRepository.activePlayerIds[index];
+                      gameState.playerIds[gameState.secPlayer] = selectedId;
                     });
                   },
-                  score: gameState.secPlayer == 0 ? gameState.player1Score : gameState.player2Score,
+                  score: gameState.player2Score,
                   onAddScore: () async {
                     await gameState.addGoalToPlayer(gameState.secPlayer);
                     setState(() {});

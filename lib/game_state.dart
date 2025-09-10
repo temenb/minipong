@@ -34,10 +34,10 @@ class GameState {
   int get serveSwitchMode => _serveSwitchModes[_selectedScore];
 
   int get player1Score =>
-      scoreLog.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
+      scoreLog.where((e) => e.player == 0).fold(0, (sum, e) => sum + e.delta);
 
   int get player2Score =>
-      scoreLog.where((e) => e.player == 2).fold(0, (sum, e) => sum + e.delta);
+      scoreLog.where((e) => e.player == 1).fold(0, (sum, e) => sum + e.delta);
 
   int get totalScore => scoreLog.fold(0, (sum, e) => sum + e.delta);
 
