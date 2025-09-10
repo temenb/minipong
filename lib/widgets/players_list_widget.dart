@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import '../entity/char.dart';
-import '../game/game_state_manager.dart';
+import 'package:minipong/entity/char.dart';
+import 'package:minipong/managers/game_manager.dart';
 
 class PlayersListWidget extends StatelessWidget {
   final List<Char> players;
-  final GameStateManager gameStateManager;
+  final GameManager gameManager;
   final VoidCallback onChanged;
 
   const PlayersListWidget({
     super.key,
     required this.players,
-    required this.gameStateManager,
+    required this.gameManager,
     required this.onChanged,
   });
 
@@ -23,9 +23,9 @@ class PlayersListWidget extends StatelessWidget {
         return ListTile(
           title: Text(player.name),
           leading: Checkbox(
-            value: gameStateManager.isPlayerActive(player.id),
+            value: gameManager.isPlayerActive(player.id),
             onChanged: (value) {
-              gameStateManager.setPlayerActive(player.id, value ?? false);
+              gameManager.setPlayerActive(player.id, value ?? false);
               onChanged();
             },
           ),
@@ -33,7 +33,7 @@ class PlayersListWidget extends StatelessWidget {
             icon: const Icon(Icons.delete),
             tooltip: 'Удалить игрока',
             onPressed: () async {
-              gameStateManager.removePlayer(player.id);
+              gameManager.removePlayer(player.id);
               onChanged();
             },
           ),
@@ -42,4 +42,3 @@ class PlayersListWidget extends StatelessWidget {
     );
   }
 }
-

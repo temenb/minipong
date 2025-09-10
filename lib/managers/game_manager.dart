@@ -4,7 +4,7 @@ import 'package:minipong/entity/char.dart';
 import 'package:minipong/repositories/match_repository.dart';
 import 'package:minipong/repositories/chars_repository.dart';
 
-class GameStateManager extends ChangeNotifier {
+class GameManager extends ChangeNotifier {
   List<Match> get matches => MatchRepository.instance.matches;
   List<Char> get chars => CharRepository.instance.chars;
 
@@ -12,7 +12,7 @@ class GameStateManager extends ChangeNotifier {
   final List<Char> _selectedChars = [];
   final Set<String> activePlayerIds = {};
 
-  GameStateManager() {
+  GameManager() {
     init();
   }
 

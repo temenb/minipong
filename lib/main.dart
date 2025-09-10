@@ -1,41 +1,61 @@
 import 'package:flutter/material.dart';
-import 'entity/char.dart';
-import 'repositories/chars_repository.dart';
-import 'game/game_state_manager.dart';
-import 'widgets/players_list_widget.dart';
+import 'package:minipong/entity/char.dart';
+import 'package:minipong/repositories/chars_repository.dart';
+import 'package:minipong/managers/game_manager.dart';
+import 'package:minipong/widgets/players_list_widget.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GameManager gameManager = GameManager();
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    print('MyApp.initState: старт инициализации GameManager');
+    gameManager.init().then((_) {
+      print('MyApp.initState: инициализация завершена');
+      setState(() {
+        _initialized = true;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: PlayersScreen(),
+    if (!_initialized) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+    return MaterialApp(
+      home: PlayersScreen(gameManager: gameManager),
     );
   }
 }
 
 class PlayersScreen extends StatefulWidget {
-  const PlayersScreen({super.key});
+  final GameManager gameManager;
+  const PlayersScreen({super.key, required this.gameManager});
 
   @override
   State<PlayersScreen> createState() => _PlayersScreenState();
 }
 
 class _PlayersScreenState extends State<PlayersScreen> {
-  final GameStateManager gameStateManager = GameStateManager();
-
-  @override
-  void initState() {
-    super.initState();
-    gameStateManager.init().then((_) {
-      setState(() {});
-    });
-  }
+  GameManager get gameManager => widget.gameManager;
 
   Future<void> _addPlayer() async {
     final controller = TextEditingController();
@@ -57,13 +77,13 @@ class _PlayersScreenState extends State<PlayersScreen> {
     );
     if (name != null && name.isNotEmpty) {
       final newChar = Char(id: DateTime.now().millisecondsSinceEpoch.toString(), name: name);
-      gameStateManager.addPlayer(newChar);
+      gameManager.addPlayer(newChar);
       setState(() {});
     }
   }
 
   void _play() {
-    final activePlayers = gameStateManager.chars.where((c) => gameStateManager.isPlayerActive(c.id)).toList();
+    final activePlayers = gameManager.chars.where((c) => gameManager.isPlayerActive(c.id)).toList();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -81,8 +101,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final players = gameStateManager.chars;
-    final activePlayersCount = players.where((c) => gameStateManager.isPlayerActive(c.id)).length;
+    final players = gameManager.chars;
+    final activePlayersCount = players.where((c) => gameManager.isPlayerActive(c.id)).length;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Список игроков'),
@@ -99,14 +119,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
           Expanded(
             child: PlayersListWidget(
               players: players,
-              onPlayerActiveChanged: (playerId, isActive) {
-                gameStateManager.setPlayerActive(playerId, isActive);
-                setState(() {});
-              },
-              onPlayerRemoved: (playerId) {
-                gameStateManager.removePlayer(playerId);
-                setState(() {});
-              },
+              gameManager: gameManager,
+              onChanged: () => setState(() {}),
             ),
           ),
           Row(

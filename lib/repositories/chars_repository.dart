@@ -35,6 +35,12 @@ class CharRepository extends Repository<Char> {
 
   /// Сохраняет текущий список персонажей в StorageService
   Future<void> persist() async {
+
+    print('====================================================================================================================');
+    print('CharRepository.persist: сохраняем игроков:');
+    for (final c in items) {
+      print('id: \'${c.id}\', name: \'${c.name}\'');
+    }
     await StorageService.instance.saveList(
       'chars',
       items.map((c) => c.toJson()).toList(),
@@ -46,5 +52,11 @@ class CharRepository extends Repository<Char> {
     final list = await StorageService.instance.loadList('chars');
     items.clear();
     items.addAll(list.map((json) => Char.fromJson(json)));
+
+    print('====================================================================================================================');
+    print('CharRepository.getAll: сохраняем игроков:');
+    for (final c in items) {
+      print('id: \'${c.id}\', name: \'${c.name}\'');
+    }
   }
 }
