@@ -17,6 +17,7 @@ class GameState {
   List<GameHistoryEntry> savedGames = [];
   List<GameHistoryEntry> sessionGames = [];
   List<String> playerIds = [];
+  List<String> initialPlayerIds = [];
   bool lock = false;
   final List<int> _scoreOptions = [11, 21, 31];
   final List<int> _serveSwitchModes = [2, 5, 5];
@@ -130,26 +131,18 @@ class GameState {
   }
 
   Future<void> saveGameAndSwitchPlayers() async {
-    // int winnerIdx = player1Score > player2Score ? 0 : 1;
-    // int loserIdx = winnerIdx == 0 ? 1 : 0;
-    // String winner = playerIds[winnerIdx];
-    // String loser = playerIds[loserIdx];
+    int winnerIdx = player1Score > player2Score ? 0 : 1;
+    int loserIdx = winnerIdx == 0 ? 1 : 0;
+    String winner = playerIds[winnerIdx];
+    String loser = playerIds[loserIdx];
 
     await saveCurrentGame();
+    // Пересортировать initialPlayerIds: победитель первым, проигравший последним, остальные в порядке очереди
+    List<String> others = initialPlayerIds.where((id) => id != winner && id != loser).toList();
+    initialPlayerIds = [winner, ...others, loser];
+    // После ресета playerIds уже содержит первых двух из initialPlayerIds
     reset();
 
-    // // Победитель становится первым
-    // setSelectedPlayer1(winner);
-    // // Найти следующего активного игрока после проигравшего
-    // final activePlayerIds = playerRepository.activePlayerIds;
-    // int loserActiveIdx = activePlayerIds.indexOf(loser);
-    // String nextPlayerId;
-    // if (loserActiveIdx != -1 && loserActiveIdx + 1 < activePlayerIds.length) {
-    //   nextPlayerId = activePlayerIds[loserActiveIdx + 1];
-    // } else {
-    //   nextPlayerId = loser;
-    // }
-    // setSelectedPlayer1(nextPlayerId);
   }
 
 
@@ -169,14 +162,19 @@ class GameState {
   }
 
   void init() {
-    reset();
     _selectedScore = 1;
-    playerIds = playerRepository.activePlayerIds;
+    initialPlayerIds = List<String>.from(playerRepository.activePlayerIds);
+    playerIds = List<String>.from(initialPlayerIds);
+    scoreLog.clear();
     sessionGames.clear();
   }
 
   void reset() {
     scoreLog.clear();
+    // Всегда первым игроком — первый из initialPlayerIds, вторым — второй
+    playerIds = [];
+    if (initialPlayerIds.isNotEmpty) playerIds.add(initialPlayerIds[0]);
+    if (initialPlayerIds.length > 1) playerIds.add(initialPlayerIds[1]);
   }
 
   List<String> get activePlayerNames => playerRepository.activePlayerNames;
