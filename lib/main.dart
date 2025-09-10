@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'entity/char.dart';
 import 'repositories/chars_repository.dart';
 import 'game/game_state_manager.dart';
+import 'widgets/players_list_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -96,28 +97,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: players.length,
-              itemBuilder: (context, index) {
-                final player = players[index];
-                return ListTile(
-                  title: Text(player.name),
-                  leading: Checkbox(
-                    value: gameStateManager.isPlayerActive(player.id),
-                    onChanged: (value) {
-                      gameStateManager.setPlayerActive(player.id, value ?? false);
-                      setState(() {});
-                    },
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    tooltip: 'Удалить игрока',
-                    onPressed: () async {
-                      gameStateManager.removePlayer(player.id);
-                      setState(() {});
-                    },
-                  ),
-                );
+            child: PlayersListWidget(
+              players: players,
+              onPlayerActiveChanged: (playerId, isActive) {
+                gameStateManager.setPlayerActive(playerId, isActive);
+                setState(() {});
+              },
+              onPlayerRemoved: (playerId) {
+                gameStateManager.removePlayer(playerId);
+                setState(() {});
               },
             ),
           ),

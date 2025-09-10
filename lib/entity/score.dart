@@ -1,20 +1,20 @@
 class Score {
   final String id;
   final int value;
-  final String gameId;
+  final String charId;
 
-  Score({required this.id, required this.value, required this.gameId});
+  Score({required this.id, required this.value, required this.charId});
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'value': value,
-    'gameId': gameId,
+    'charId': charId,
   };
 
   static Score fromJson(Map<String, dynamic> json) => Score(
     id: json['id'],
     value: json['value'],
-    gameId: json['gameId'],
+    charId: json['charId'],
   );
 }
 

@@ -1,25 +1,24 @@
-import 'battle.dart';
-
-class Match {
+class Game {
   final String id;
-  final List<String> battleIds;
+  final List<String> charIds;
   final DateTime createdAt;
 
-  Match({
+  Game({
     required this.id,
-    required this.battleIds,
+    required this.charIds,
     required this.createdAt,
   });
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'battleIds': battleIds,
+    'charIds': charIds,
     'createdAt': createdAt.toIso8601String(),
   };
 
-  static Match fromJson(Map<String, dynamic> json) => Match(
+  static Game fromJson(Map<String, dynamic> json) => Game(
     id: json['id'],
-    battleIds: List<String>.from(json['battleIds']),
+    charIds: List<String>.from(json['charIds']),
     createdAt: DateTime.parse(json['createdAt']),
   );
 }
+
