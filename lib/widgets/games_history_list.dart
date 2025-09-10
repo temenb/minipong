@@ -27,7 +27,7 @@ class _GamesHistoryListState extends State<GamesHistoryList> {
 
   @override
   Widget build(BuildContext context) {
-    final games = widget.gameState.sessionGames;
+    final games = widget.gameState.sessionGames.reversed.toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -180,30 +180,28 @@ class GameState {
   }
 
   Future<void> saveGameAndSwitchPlayers() async {
-    int p1Score = player1Score;
-    int p2Score = player2Score;
-    int winnerIdx = p1Score > p2Score ? 0 : 1;
-    int loserIdx = p1Score > p2Score ? 1 : 0;
-    String winner = players[winnerIdx];
-    String loser = players[loserIdx];
-    int selectedScoreOption = selectedScore;
+    // int p1Score = player1Score;
+    // int p2Score = player2Score;
+    // int winnerIdx = p1Score > p2Score ? 0 : 1;
+    // int loserIdx = p1Score > p2Score ? 1 : 0;
+    // String winner = players[winnerIdx];
+    // String loser = players[loserIdx];
 
     await saveCurrentGame();
     reset();
 
-    // Победитель становится первым
-    setSelectedPlayer1(winner);
-    // Найти следующего активного игрока после проигравшего
-    final activePlayers = activePlayerNames;
-    int loserActiveIdx = activePlayers.indexOf(loser);
-    String nextPlayer;
-    if (loserActiveIdx != -1 && loserActiveIdx + 1 < activePlayers.length) {
-      nextPlayer = activePlayers[loserActiveIdx + 1];
-    } else {
-      nextPlayer = loser;
-    }
-    setSelectedPlayer1(nextPlayer);
-    selectedScore = selectedScoreOption;
+    // // Победитель становится первым
+    // setSelectedPlayer1(winner);
+    // // Найти следующего активного игрока после проигравшего
+    // final activePlayers = activePlayerNames;
+    // int loserActiveIdx = activePlayers.indexOf(loser);
+    // String nextPlayer;
+    // if (loserActiveIdx != -1 && loserActiveIdx + 1 < activePlayers.length) {
+    //   nextPlayer = activePlayers[loserActiveIdx + 1];
+    // } else {
+    //   nextPlayer = loser;
+    // }
+    // setSelectedPlayer1(nextPlayer);
   }
 
 
@@ -229,11 +227,11 @@ class GameState {
     players = [];
     if (active.isNotEmpty) players.add(active[0]);
     if (active.length > 1) players.add(active[1]);
+    sessionGames.clear(); // очищаем историю игр текущей сессии
   }
 
   void reset() {
     scoreLog.clear();
-    sessionGames.clear(); // очищаем историю игр текущей сессии
   }
 
   final PlayerRepository playerRepository = PlayerRepository.instance;
