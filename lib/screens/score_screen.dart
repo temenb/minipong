@@ -84,7 +84,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Виджет для firPlayer
                 PlayerScoreWidget(
                   playerNames: gameState.activePlayerNames,
-                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players[0]),
+                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players[gameState.firPlayer == 0 ? 0 : 1]),
                   onPlayerChanged: (index) {
                     setState(() {
                       gameState.setSelectedPlayer1(gameState.activePlayerNames[index]);
@@ -92,7 +92,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   },
                   score: gameState.firPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () async {
-                    await gameState.addGoalToPlayer(gameState.firPlayer + 1);
+                    await gameState.addGoalToPlayer(gameState.firPlayer);
                     setState(() {});
                   },
                   isGreen: gameState.serverPlayer == gameState.firPlayer,
@@ -135,7 +135,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                 // Виджет для secPlayer
                 PlayerScoreWidget(
                   playerNames: gameState.activePlayerNames,
-                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players[1]),
+                  selectedPlayerIndex: gameState.activePlayerNames.indexOf(gameState.players[gameState.firPlayer == 0 ? 1 : 0]),
                   onPlayerChanged: (index) {
                     setState(() {
 
@@ -146,7 +146,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   },
                   score: gameState.secPlayer == 0 ? gameState.player1Score : gameState.player2Score,
                   onAddScore: () async {
-                    await gameState.addGoalToPlayer(gameState.secPlayer + 1);
+                    await gameState.addGoalToPlayer(gameState.secPlayer);
                     setState(() {});
                   },
                   isGreen: gameState.serverPlayer == gameState.secPlayer,

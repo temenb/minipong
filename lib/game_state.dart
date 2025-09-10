@@ -4,49 +4,17 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:minipong/player_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ScoreLogEntry {
-  final int player;
-  final int delta;
-  final DateTime timestamp;
-
-  ScoreLogEntry(this.player, this.delta, [DateTime? ts])
-    : timestamp = ts ?? DateTime.now();
-}
-
-class GameHistoryEntry {
-  final String winner;
-  final String loser;
-  final List<ScoreLogEntry> scoreLog;
-
-  GameHistoryEntry({required this.winner, required this.loser, required this.scoreLog});
-
-  Map<String, dynamic> toJson() => {
-    'winner': winner,
-    'loser': loser,
-    'scoreLog': scoreLog.map((e) => {
-      'player': e.player,
-      'delta': e.delta,
-      'timestamp': e.timestamp.toIso8601String(),
-    }).toList(),
-  };
-
-  static GameHistoryEntry fromJson(Map<String, dynamic> json) {
-    return GameHistoryEntry(
-      winner: json['winner'],
-      loser: json['loser'],
-      scoreLog: (json['scoreLog'] as List).map((e) => ScoreLogEntry(
-        e['player'],
-        e['delta'],
-        DateTime.parse(e['timestamp']),
-      )).toList(),
-    );
-  }
-}
+import 'models/game_models.dart';
+import 'repositories/game_history_repository.dart';
+import 'services/audio_service.dart';
 
 class GameState {
   static final GameState instance = GameState._internal();
-
   GameState._internal();
+
+  final GameHistoryRepository gameHistoryRepository = GameHistoryRepository();
+  final AudioService audioService = AudioService();
+  final PlayerRepository playerRepository = PlayerRepository.instance;
 
   List<ScoreLogEntry> scoreLog = [];
   List<GameHistoryEntry> savedGames = [];
@@ -128,12 +96,7 @@ class GameState {
   }
 
   Future<void> loadSavedGames() async {
-    final prefs = await SharedPreferences.getInstance();
-    final gamesJson = prefs.getStringList('savedGames') ?? [];
-    savedGames = gamesJson.map((game) {
-      final map = jsonDecode(game) as Map<String, dynamic>;
-      return GameHistoryEntry.fromJson(map);
-    }).toList();
+    savedGames = await gameHistoryRepository.loadSavedGames();
     sessionGames = [];
   }
 
@@ -145,10 +108,7 @@ class GameState {
       loser: loser,
       scoreLog: List<ScoreLogEntry>.from(scoreLog),
     );
-    final prefs = await SharedPreferences.getInstance();
-    final gamesJson = prefs.getStringList('savedGames') ?? [];
-    gamesJson.insert(0, jsonEncode(entry.toJson())); // новые сверху
-    await prefs.setStringList('savedGames', gamesJson);
+    await gameHistoryRepository.saveCurrentGame(entry);
     savedGames.insert(0, entry);
     sessionGames.insert(0, entry);
     scoreLog.clear();
@@ -165,14 +125,12 @@ class GameState {
     _lastGoalTime = now;
 
     scoreLog.add(ScoreLogEntry(playerNum, 1));
-    if (playerNum == 1) {
-      _audioPlayer.play(AssetSource('audio/ping1.mp3'));
-    } else if (playerNum == 2) {
-      _audioPlayer.play(AssetSource('audio/ping2.mp3'));
-    }
+    await audioService.playPing(playerNum);
 
     print('============================================================================================================================================');
     print('[DEBUG] addGoalToPlayer: playerNum=$playerNum, player1Score=$player1Score, player2Score=$player2Score, totalScore=$totalScore');
+    print('[DEBUG] players: $players');
+    print('[DEBUG] firPlayer: $firPlayer, secPlayer: $secPlayer');
     print('[DEBUG] isGameFinished: ${isGameFinished()}');
     if (isGameFinished()) {
       await saveGameAndSwitchPlayers();
@@ -233,8 +191,6 @@ class GameState {
   void reset() {
     scoreLog.clear();
   }
-
-  final PlayerRepository playerRepository = PlayerRepository.instance;
 
   List<String> get activePlayerNames => playerRepository.activePlayerNames;
 }
