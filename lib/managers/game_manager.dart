@@ -17,7 +17,7 @@ class GameManager extends ChangeNotifier {
       characterIds: [],
       createdAt: DateTime.now(),
     );
-    // _selectedCharacters.clear();
+    notifyListeners();
   }
 
   /// Сброс состояния игры

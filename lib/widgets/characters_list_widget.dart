@@ -11,7 +11,7 @@ class CharactersListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final characters = gameManager.characters;
+    final characters = gameManager.currentGame?.characters ?? [];
     return Column(
       children: [
         ElevatedButton(

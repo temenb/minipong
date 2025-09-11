@@ -1,3 +1,6 @@
+import 'package:minipong/repositories/character_repository.dart';
+import 'package:minipong/entity/character.dart';
+
 class Game {
   final String id;
   List<String> characterIds;
@@ -20,4 +23,9 @@ class Game {
     characterIds: List<String>.from(json['characterIds']),
     createdAt: DateTime.parse(json['createdAt']),
   );
+
+  List<Character> get characters =>
+      CharacterRepository.instance.characters
+          .where((c) => characterIds.contains(c.id))
+          .toList();
 }
