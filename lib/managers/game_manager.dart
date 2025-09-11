@@ -25,6 +25,12 @@ class GameManager extends ChangeNotifier {
     reset();
     try {
       await CharacterRepository.instance.getAll();
+
+      print('=====================================================================================================================');
+      print('GameManager.init: ��олучены персонажи:');
+      for (final c in CharacterRepository.instance.characters) {
+        print('id: \'${c.id}\', name: \'${c.name}\'');
+      }
     } catch (e, s) {
       print('=====================================================================================================================');
       print('GameManager.init: error: $e\n$s');

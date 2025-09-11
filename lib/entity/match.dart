@@ -2,18 +2,18 @@ import 'battle.dart';
 
 class Match {
   final String id;
-  final List<String> battleIds;
+  final List<String> _battleIds;
   final DateTime createdAt;
 
   Match({
     required this.id,
-    required this.battleIds,
+    required List<String> battleIds,
     required this.createdAt,
-  });
+  }) : _battleIds = battleIds;
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'battleIds': battleIds,
+    'battleIds': _battleIds,
     'createdAt': createdAt.toIso8601String(),
   };
 
@@ -22,4 +22,6 @@ class Match {
     battleIds: List<String>.from(json['battleIds']),
     createdAt: DateTime.parse(json['createdAt']),
   );
+
+  List<String> get battleIds => _battleIds;
 }

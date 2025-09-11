@@ -52,9 +52,17 @@ class CharacterRepository extends Repository<Character> {
 
   /// Загружает список матчей из StorageService и обновляет items
   Future<void> getAll() async {
-    final list = await StorageService.instance.loadList('characters');
+    // final list = await StorageService.instance.loadList('characters');
+    // clear();
+    // addAll(list.map((json) => Character.fromJson(json)));
+
+    final list = <Character>[
+      Character(id: '1', name: 'character 1'),
+      Character(id: '2', name: 'character 2'),
+      Character(id: '3', name: 'character 3'),
+    ];
     clear();
-    addAll(list.map((json) => Character.fromJson(json)));
+    addAll(list);
 
     print('====================================================================================================================');
     print('CharacterRepository.getAll: сохр��няем игроков:');

@@ -1,20 +1,21 @@
 import 'package:minipong/repositories/character_repository.dart';
 import 'package:minipong/entity/character.dart';
+import 'package:flutter/foundation.dart';
 
 class Game {
   final String id;
-  List<String> characterIds;
+  List<String> _characterIds;
   final DateTime createdAt;
 
   Game({
     required this.id,
-    required this.characterIds,
+    required List<String> characterIds,
     required this.createdAt,
-  });
+  }) : _characterIds = characterIds;
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'characterIds': characterIds,
+    'characterIds': _characterIds,
     'createdAt': createdAt.toIso8601String(),
   };
 
@@ -26,6 +27,11 @@ class Game {
 
   List<Character> get characters =>
       CharacterRepository.instance.characters
-          .where((c) => characterIds.contains(c.id))
+          .where((c) => _characterIds.contains(c.id))
           .toList();
+
+  List<String> get characterIds {
+    debugPrint('[Game] characterIds requested: $_characterIds');
+    return _characterIds;
+  }
 }
