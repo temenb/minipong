@@ -25,7 +25,12 @@ class GameManager extends ChangeNotifier {
   /// Сброс состояния игры
   Future<void> init() async {
     reset();
-    await CharRepository.instance.getAll();
+    try {
+      await CharRepository.instance.getAll();
+    } catch (e, s) {
+      print('=====================================================================================================================');
+      print('GameManager.init: error: $e\n$s');
+    }
     notifyListeners();
   }
 
@@ -65,7 +70,7 @@ class GameManager extends ChangeNotifier {
   }
 
   void removePlayer(String id) {
-    CharRepository.instance.remove(id);
+    CharRepository.instance.removeById(id);
     activePlayerIds.remove(id);
     notifyListeners();
   }

@@ -20,8 +20,12 @@ class MatchRepository extends Repository<Match> {
   }
 
   @override
-  void remove(String id) {
-    items.removeWhere((m) => m.id == id);
+  void removeById(String id) {
+    final index = items.indexWhere((c) => c.id == id);
+    if (index == -1) {
+      return;
+    }
+    remove(index);
   }
 
   void clear() => super.clear();

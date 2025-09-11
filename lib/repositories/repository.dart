@@ -1,24 +1,27 @@
+import 'package:flutter/foundation.dart';
+
 abstract class Repository<T> {
   final List<T> _items = [];
 
   List<T> get items => List.unmodifiable(_items);
-
   void add(T item) {
     _items.add(item);
   }
 
-  T? getById(String id) {
-    // Должен быть реализован в наследнике, т.к. нет гарантии, что у T есть поле id
-    throw UnimplementedError();
+  void addAll(Iterable<T> items) {
+    _items.addAll(items);
   }
 
-  void remove(String id) {
-    // Должен быть реализован в наследнике
-    throw UnimplementedError();
+  /// Защищённый метод удаления по id
+  @protected
+  /// Удаляет персонажа по индексу
+  void remove(int index) {
+    if (index >= 0 && index < _items.length) {
+      _items.removeAt(index);
+    }
   }
 
   void clear() {
     _items.clear();
   }
 }
-

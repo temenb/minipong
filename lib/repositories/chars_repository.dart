@@ -23,8 +23,12 @@ class CharRepository extends Repository<Char> {
   }
 
   @override
-  void remove(String id) {
-    items.removeWhere((c) => c.id == id);
+  void removeById(String id) {
+    final index = items.indexWhere((c) => c.id == id);
+    if (index == -1) {
+      return;
+    }
+    remove(index);
     persist();
   }
 
@@ -35,7 +39,6 @@ class CharRepository extends Repository<Char> {
 
   /// Сохраняет текущий список персонажей в StorageService
   Future<void> persist() async {
-
     print('====================================================================================================================');
     print('CharRepository.persist: сохраняем игроков:');
     for (final c in items) {
@@ -50,11 +53,11 @@ class CharRepository extends Repository<Char> {
   /// Загружает список матчей из StorageService и обновляет items
   Future<void> getAll() async {
     final list = await StorageService.instance.loadList('chars');
-    items.clear();
-    items.addAll(list.map((json) => Char.fromJson(json)));
+    clear();
+    addAll(list.map((json) => Char.fromJson(json)));
 
     print('====================================================================================================================');
-    print('CharRepository.getAll: сохраняем игроков:');
+    print('CharRepository.getAll: сохр��няем игроков:');
     for (final c in items) {
       print('id: \'${c.id}\', name: \'${c.name}\'');
     }
