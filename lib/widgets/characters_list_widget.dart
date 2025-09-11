@@ -1,40 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:minipong/managers/game_manager.dart';
-import 'package:minipong/widgets/character_list_item.dart';
 import 'package:minipong/entity/character.dart';
+import 'package:minipong/repositories/character_repository.dart';
+import 'dart:math';
+import 'package:minipong/widgets/character_list_item.dart';
 
 class CharactersListWidget extends StatelessWidget {
   final GameManager gameManager;
-  final void Function(Character)? onRemove;
-
-  const CharactersListWidget({Key? key, required this.gameManager, this.onRemove}) : super(key: key);
+  const CharactersListWidget({Key? key, required this.gameManager}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final characters = gameManager.characters;
-    if (characters.isEmpty) {
-      return const Center(child: Text('Нет игроков'));
-    }
-    return ListView.builder(
-      itemCount: characters.length,
-      itemBuilder: (context, index) {
-        final character = characters[index];
-        final isActive = gameManager.activePlayerIds.contains(character.id);
-        return CharacterListItem(
-          character: character,
-          isActive: isActive,
-          onActiveChanged: (value) {
-            if (value) {
-              gameManager.activePlayerIds.add(character.id);
-            } else {
-              gameManager.activePlayerIds.remove(character.id);
-            }
-            gameManager.notifyListeners();
+    return Column(
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            final randomNames = [
+              'Артём', 'Виктор', 'Сергей', 'Алексей', 'Дмитрий',
+              'Иван', 'Максим', 'Павел', 'Егор', 'Андрей',
+              'Олег', 'Владимир', 'Игорь', 'Роман', 'Михаил',
+              'Глеб', 'Антон', 'Кирилл', 'Виталий', 'Степан'
+            ];
+            final rand = Random();
+            final name = randomNames[rand.nextInt(randomNames.length)];
+            CharacterRepository.instance.addCharacter(Character(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              name: name,
+            ));
           },
-          onRemove: (char) {
-            gameManager.characters.removeWhere((c) => c.id == char.id);
-        );
-      },
+          child: const Text('Добавить игрока'),
+        ),
+        Expanded(
+          child: characters.isEmpty
+              ? const Center(child: Text('Нет игроков'))
+              : ListView.builder(
+                  itemCount: characters.length,
+                  itemBuilder: (context, index) {
+                    final character = characters[index];
+                    return CharacterListItem(character: character);
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
