@@ -1,23 +1,23 @@
 class Game {
   final String id;
-  final List<String> charIds;
+  final List<String> characteracterIds;
   final DateTime createdAt;
 
   Game({
     required this.id,
-    required this.charIds,
+    required this.characteracterIds,
     required this.createdAt,
   });
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'charIds': charIds,
+    'characteracterIds': characteracterIds,
     'createdAt': createdAt.toIso8601String(),
   };
 
   static Game fromJson(Map<String, dynamic> json) => Game(
     id: json['id'],
-    charIds: List<String>.from(json['charIds']),
+    characteracterIds: List<String>.from(json['characteracterIds']),
     createdAt: DateTime.parse(json['createdAt']),
   );
 }

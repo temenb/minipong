@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:minipong/entity/match.dart';
-import 'package:minipong/entity/char.dart';
+import 'package:minipong/entity/character.dart';
 import 'package:minipong/repositories/match_repository.dart';
-import 'package:minipong/repositories/chars_repository.dart';
+import 'package:minipong/repositories/character_repository.dart';
 
 class GameManager extends ChangeNotifier {
   List<Match> get matches => MatchRepository.instance.matches;
-  List<Char> get chars => CharRepository.instance.chars;
+  List<Character> get characters => CharacterRepository.instance.characters;
 
   Match? _currentMatch;
-  final List<Char> _selectedChars = [];
+  final List<Character> _selectedCharacters = [];
   final Set<String> activePlayerIds = {};
 
   GameManager() {
@@ -18,7 +18,7 @@ class GameManager extends ChangeNotifier {
 
   void reset() {
     _currentMatch = null;
-    _selectedChars.clear();
+    _selectedCharacters.clear();
     notifyListeners();
   }
 
@@ -26,7 +26,7 @@ class GameManager extends ChangeNotifier {
   Future<void> init() async {
     reset();
     try {
-      await CharRepository.instance.getAll();
+      await CharacterRepository.instance.getAll();
     } catch (e, s) {
       print('=====================================================================================================================');
       print('GameManager.init: error: $e\n$s');
@@ -35,19 +35,19 @@ class GameManager extends ChangeNotifier {
   }
 
   Match? get currentMatch => _currentMatch;
-  List<Char> get selectedChars => List.unmodifiable(_selectedChars);
+  List<Character> get selectedCharacters => List.unmodifiable(_selectedCharacters);
 
   /// Создание нового матча с выбранными персонажами
-  void createNewMatch(List<Char> chars) {
+  void createNewMatch(List<Character> characters) {
     final newMatch = Match(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       battleIds: [],
       createdAt: DateTime.now(),
     );
     _currentMatch = newMatch;
-    _selectedChars
+    _selectedCharacters
       ..clear()
-      ..addAll(chars);
+      ..addAll(characters);
     MatchRepository.instance.addMatch(newMatch);
     notifyListeners();
   }
@@ -63,14 +63,14 @@ class GameManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addPlayer(Char char) {
-    CharRepository.instance.addChar(char);
-    activePlayerIds.add(char.id);
+  void addPlayer(Character character) {
+    CharacterRepository.instance.addCharacter(character);
+    activePlayerIds.add(character.id);
     notifyListeners();
   }
 
   void removePlayer(String id) {
-    CharRepository.instance.removeById(id);
+    CharacterRepository.instance.removeById(id);
     activePlayerIds.remove(id);
     notifyListeners();
   }

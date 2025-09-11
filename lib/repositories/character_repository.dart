@@ -1,20 +1,20 @@
-import 'package:minipong/entity/char.dart';
+import 'package:minipong/entity/character.dart';
 import 'package:minipong/repositories/repository.dart';
 import 'package:minipong/repositories/storage_service.dart';
 
-class CharRepository extends Repository<Char> {
-  static final CharRepository instance = CharRepository._internal();
-  CharRepository._internal();
+class CharacterRepository extends Repository<Character> {
+  static final CharacterRepository instance = CharacterRepository._internal();
+  CharacterRepository._internal();
 
-  List<Char> get chars => items;
+  List<Character> get characters => items;
 
-  void addChar(Char char) {
-    add(char);
+  void addCharacter(Character character) {
+    add(character);
     persist();
   }
 
   @override
-  Char? getById(String id) {
+  Character? getById(String id) {
     try {
       return items.firstWhere((c) => c.id == id);
     } catch (_) {
@@ -40,24 +40,24 @@ class CharRepository extends Repository<Char> {
   /// Сохраняет текущий список персонажей в StorageService
   Future<void> persist() async {
     print('====================================================================================================================');
-    print('CharRepository.persist: сохраняем игроков:');
+    print('CharacterRepository.persist: сохраняем игроков:');
     for (final c in items) {
       print('id: \'${c.id}\', name: \'${c.name}\'');
     }
     await StorageService.instance.saveList(
-      'chars',
+      'characters',
       items.map((c) => c.toJson()).toList(),
     );
   }
 
   /// Загружает список матчей из StorageService и обновляет items
   Future<void> getAll() async {
-    final list = await StorageService.instance.loadList('chars');
+    final list = await StorageService.instance.loadList('characters');
     clear();
-    addAll(list.map((json) => Char.fromJson(json)));
+    addAll(list.map((json) => Character.fromJson(json)));
 
     print('====================================================================================================================');
-    print('CharRepository.getAll: сохр��няем игроков:');
+    print('CharacterRepository.getAll: сохр��няем игроков:');
     for (final c in items) {
       print('id: \'${c.id}\', name: \'${c.name}\'');
     }
