@@ -6,12 +6,13 @@ class Battle {
   final DateTime? finishedAt;
 
   Battle({
-    required this.id,
+    String? id,
     required List<String> characterIds,
     required List<String> scoreIds,
     required this.startedAt,
     this.finishedAt,
-  })  : _characterIds = characterIds,
+  })  : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        _characterIds = characterIds,
         _scoreIds = scoreIds;
 
   Map<String, dynamic> toJson() => {

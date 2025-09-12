@@ -6,10 +6,11 @@ class Match {
   final DateTime createdAt;
 
   Match({
-    required this.id,
+    String? id,
     required List<String> battleIds,
     required this.createdAt,
-  }) : _battleIds = battleIds;
+  }) : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+       _battleIds = battleIds;
 
   Map<String, dynamic> toJson() => {
     'id': id,

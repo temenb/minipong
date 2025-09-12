@@ -8,10 +8,11 @@ class Game {
   final DateTime createdAt;
 
   Game({
-    required this.id,
+    String? id,
     required List<String> characterIds,
     required this.createdAt,
-  }) : _characterIds = characterIds;
+  }) : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+       _characterIds = characterIds;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -25,10 +26,9 @@ class Game {
     createdAt: DateTime.parse(json['createdAt']),
   );
 
-  List<Character> get characters =>
-      CharacterRepository.instance.characters
-          .where((c) => _characterIds.contains(c.id))
-          .toList();
+  List<Character> get characters => CharacterRepository.instance.characters
+      .where((c) => _characterIds.contains(c.id))
+      .toList();
 
   List<String> get characterIds {
     debugPrint('[Game] characterIds requested: $_characterIds');

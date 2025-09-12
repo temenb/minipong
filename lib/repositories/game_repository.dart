@@ -1,6 +1,6 @@
-import '../entity/game.dart';
-import 'storage_service.dart';
-import 'repository.dart';
+import 'package:minipong/entity/game.dart';
+import 'package:minipong/services/storage_service.dart';
+import 'package:minipong/repositories/repository.dart';
 
 class GameRepository extends Repository<Game> {
   static final GameRepository instance = GameRepository._internal();
@@ -35,4 +35,3 @@ class GameRepository extends Repository<Game> {
     items.addAll(list.map((json) => Game.fromJson(json)));
   }
 }
-

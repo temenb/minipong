@@ -3,11 +3,15 @@ import 'package:minipong/entity/game.dart';
 import 'package:minipong/entity/character.dart';
 import 'package:minipong/repositories/match_repository.dart';
 import 'package:minipong/repositories/character_repository.dart';
+import 'package:minipong/managers/character_manager.dart';
+import 'package:logger/logger.dart';
 
 class GameManager extends ChangeNotifier {
+  final Logger logger = Logger();
+  final CharacterManager characterManager;
   Game? _currentGame;
 
-  GameManager() {
+  GameManager(this.characterManager) {
     init();
   }
 
@@ -24,16 +28,9 @@ class GameManager extends ChangeNotifier {
   Future<void> init() async {
     reset();
     try {
-      await CharacterRepository.instance.getAll();
-
-      print('=====================================================================================================================');
-      print('GameManager.init: ��олучены персонажи:');
-      for (final c in CharacterRepository.instance.characters) {
-        print('id: \'${c.id}\', name: \'${c.name}\'');
-      }
+      await characterManager.initCharacters();
     } catch (e, s) {
-      print('=====================================================================================================================');
-      print('GameManager.init: error: $e\n$s');
+      logger.e('GameManager.init: error: $e\n$s');
     }
   }
 

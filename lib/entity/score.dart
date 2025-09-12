@@ -3,8 +3,9 @@ class Score {
   final int value;
   final String _characterId;
 
-  Score({required this.id, required this.value, required String characterId})
-      : _characterId = characterId;
+  Score({String? id, required this.value, required String characterId})
+      : id = id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        _characterId = characterId;
 
   Map<String, dynamic> toJson() => {
     'id': id,
