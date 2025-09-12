@@ -19,8 +19,19 @@ class TableTennisScoreApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    GameState.instance.audioService.playBackground();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +48,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 textStyle: const TextStyle(fontSize: 32),
               ),
-              onPressed: () {
+              onPressed: () async {
+                await GameState.instance.audioService.stopBackground();
                 GameState.instance.init();
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const ScoreScreen()),

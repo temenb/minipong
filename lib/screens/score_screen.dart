@@ -39,6 +39,7 @@ class _ScoreScreenState extends State<ScoreScreen> {
       if (key == LogicalKeyboardKey.backspace) {
         print('[DEBUG] Backspace detected');
         if (gameState.scoreLog.isNotEmpty) {
+          await gameState.audioService.playUndo();
           gameState.deleteLogEntry(gameState.scoreLog.length - 1);
           setState(() {});
         }
@@ -55,6 +56,17 @@ class _ScoreScreenState extends State<ScoreScreen> {
         }
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    gameState.lock = true;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -185,7 +197,8 @@ class _ScoreScreenState extends State<ScoreScreen> {
                   Expanded(
                     child: CurrentGoalsList(
                       gameState: gameState,
-                      onDelete: (index) {
+                      onDelete: (index) async {
+                        await gameState.audioService.playUndo();
                         setState(() {
                           gameState.deleteLogEntry(index);
                         });
