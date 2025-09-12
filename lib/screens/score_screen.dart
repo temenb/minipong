@@ -35,6 +35,25 @@ class _ScoreScreenState extends State<ScoreScreen> {
         await gameState.addGoalToPlayer(1);
         setState(() {});
       }
+      // Backspace для удаления последнего гола
+      if (key == LogicalKeyboardKey.backspace) {
+        print('[DEBUG] Backspace detected');
+        if (gameState.scoreLog.isNotEmpty) {
+          gameState.deleteLogEntry(gameState.scoreLog.length - 1);
+          setState(() {});
+        }
+      }
+      // S для смены игроков
+      if (key == LogicalKeyboardKey.keyS) {
+        print('[DEBUG] S detected');
+        if (gameState.totalScore == 0 && gameState.playerIds.length > 1) {
+          setState(() {
+            final tmp = gameState.playerIds[0];
+            gameState.playerIds[0] = gameState.playerIds[1];
+            gameState.playerIds[1] = tmp;
+          });
+        }
+      }
     }
   }
 
