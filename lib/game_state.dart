@@ -115,7 +115,7 @@ class GameState {
 
   Future<void> addGoalToPlayer(int playerNum) async {
     final now = DateTime.now();
-    if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 2000) {
+    if (_lastGoalTime != null && now.difference(_lastGoalTime!).inMilliseconds < 500) {
       return;
     }
     _lastGoalTime = now;
