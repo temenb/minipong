@@ -58,7 +58,23 @@ class GameManager extends ChangeNotifier {
 //
 // void setPlayerActive(String id, bool active) {
 // }
-//
+
+  addToActivePlayers(String id) {
+    if (_currentGame == null) return;
+    if (!_currentGame!.characterIds.contains(id)) {
+      _currentGame!.characterIds.add(id);
+      notifyListeners();
+    }
+  }
+
+  removeFromActivePlayers(String id) {
+    if (_currentGame == null) return;
+    if (_currentGame!.characterIds.contains(id)) {
+      _currentGame!.characterIds.remove(id);
+      notifyListeners();
+    }
+  }
+
 // void addPlayer(Character character) {
 //   CharacterRepository.instance.addCharacter(character);
 //   activePlayerIds.add(character.id);
