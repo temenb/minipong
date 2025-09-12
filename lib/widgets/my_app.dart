@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minipong/widgets/characters_list.dart';
+import 'package:minipong/widgets/playbutton.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,9 +26,21 @@ class MainAppScreen extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: главный экран приложения
-      home: const Scaffold(
-        body: Center(
-          child: CharactersList(),
+      home: Scaffold(
+        body: Column(
+          children: [
+            const SizedBox(height: 32), // отступ сверху
+            const PlayButton(),
+            const SizedBox(height: 24),
+            Expanded(
+              child: Center(
+                child: SizedBox(
+                  height: 400,
+                  child: CharactersList(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

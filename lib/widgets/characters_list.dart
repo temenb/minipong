@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:minipong/managers/character_manager.dart';
+import 'package:minipong/widgets/character_list_item.dart';
 
 class CharactersList extends StatelessWidget {
   const CharactersList({Key? key}) : super(key: key);
@@ -17,14 +18,10 @@ class CharactersList extends StatelessWidget {
           itemCount: characters.length,
           itemBuilder: (context, index) {
             final character = characters[index];
-            return ListTile(
-              title: Text(character.name),
-              subtitle: Text('ID: ${character.id}'),
-            );
+            return CharacterListItem(character: character);
           },
         );
       },
     );
   }
 }
-

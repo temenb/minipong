@@ -75,3 +75,4 @@ class CharacterManager extends ChangeNotifier {
     notifyListeners();
   }
 }
+
