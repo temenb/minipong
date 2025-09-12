@@ -1,6 +1,6 @@
 class Character {
   final String id;
-  final String name;
+  String name;
 
   Character({String? id, required this.name})
       : id = id ?? DateTime.now().millisecondsSinceEpoch.toString();
