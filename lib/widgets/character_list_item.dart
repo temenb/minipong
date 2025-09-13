@@ -51,7 +51,9 @@ class _CharacterListItemState extends State<CharacterListItem> {
     if (!_editing) {
       _controller.text = widget.character.name;
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _startEdit() {
@@ -112,22 +114,24 @@ class _CharacterListItemState extends State<CharacterListItem> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_upward),
-                tooltip: 'Вверх',
-                onPressed: () {
-                  final gameManager = Provider.of<GameManager>(context, listen: false);
-                  _characterManager.moveCharacterUp(widget.character.id, gameManager);
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.arrow_downward),
-                tooltip: 'Вниз',
-                onPressed: () {
-                  final gameManager = Provider.of<GameManager>(context, listen: false);
-                  _characterManager.moveCharacterDown(widget.character.id, gameManager);
-                },
-              ),
+              if (isChecked) ...[
+                IconButton(
+                  icon: const Icon(Icons.arrow_upward),
+                  tooltip: 'Вверх',
+                  onPressed: () {
+                    final gameManager = Provider.of<GameManager>(context, listen: false);
+                    _characterManager.moveCharacterUp(widget.character.id, gameManager);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_downward),
+                  tooltip: 'Вниз',
+                  onPressed: () {
+                    final gameManager = Provider.of<GameManager>(context, listen: false);
+                    _characterManager.moveCharacterDown(widget.character.id, gameManager);
+                  },
+                ),
+              ],
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),
                 tooltip: 'Удалить',

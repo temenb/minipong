@@ -9,14 +9,15 @@ class CharacterManager extends ChangeNotifier {
   final CharacterRepository _repository = CharacterRepository.instance;
   final Logger logger = Logger();
 
-  List<Character> get characters => _repository.characters;
-
   CharacterManager();
+
+  /// Публичный геттер для получения всех персонажей
+  List<Character> get characters => _repository.characters;
 
   Future<void> initCharacters() async {
     await getAllFromStorage();
     logger.d('CharacterManager.initCharacters: получены персонажи:');
-    for (final c in characters) {
+    for (final c in _repository.characters) {
       logger.d("id: '${c.id}', name: '${c.name}'");
     }
     notifyListeners();
@@ -24,7 +25,8 @@ class CharacterManager extends ChangeNotifier {
 
   void addCharacter(String name) {
     final character = Character(name: name);
-    logger.d('CharacterManager.addCharacter: добавляем персонажа: id=${character.id}, name=${character.name}');
+    logger.d('CharacterManager.addCharacter: добавляем персонаца: id=${character
+        .id}, name=${character.name}');
     _repository.addCharacter(character);
     persist();
     notifyListeners();
@@ -34,7 +36,7 @@ class CharacterManager extends ChangeNotifier {
     _repository.removeById(id);
     StorageService.instance.saveList(
       'characters',
-      characters.map((c) => c.toJson()).toList(),
+      _repository.characters.map((c) => c.toJson()).toList(),
     );
     notifyListeners();
   }
@@ -51,12 +53,12 @@ class CharacterManager extends ChangeNotifier {
   /// Сохраняет текущий список персонажей в StorageService
   Future<void> persist() async {
     logger.d('CharacterManager.persist: сохраняем игроков:');
-    for (final c in characters) {
+    for (final c in _repository.characters) {
       logger.d("id: '${c.id}', name: '${c.name}'");
     }
     await StorageService.instance.saveList(
       'characters',
-      characters.map((c) => c.toJson()).toList(),
+      _repository.characters.map((c) => c.toJson()).toList(),
     );
   }
 
@@ -67,43 +69,42 @@ class CharacterManager extends ChangeNotifier {
     _repository.addAll(list.map((json) => Character.fromJson(json)));
 
     logger.d('CharacterManager.getAllFromStorage: получаем игроков:');
-    for (final c in characters) {
+    for (final c in _repository.characters) {
       logger.d("id: '${c.id}', name: '${c.name}'");
     }
     notifyListeners();
   }
 
-
   void moveCharacterUp(String id, GameManager gameManager) {
     _moveCharacter(id, 1, gameManager);
   }
+
   void moveCharacterDown(String id, GameManager gameManager) {
     _moveCharacter(id, -1, gameManager);
   }
 
-
   void _moveCharacter(String id, int direction, GameManager gameManager) {
-    int index = characters.indexWhere((c) => c.id == id);
+    int index = _repository.characters.indexWhere((c) => c.id == id);
+    if (direction == 0) return;
     if (index == -1) return;
-    final currentGame = gameManager?.currentGame;//обьект равен нулл
+    final currentGame = gameManager?.currentGame;
     if (currentGame == null) return;
     final currentGameIds = currentGame.characterIds;
-    // Удаляем некорректную проверку: if (!currentGameIds) return;
-    // Вместо этого проверяем, что список не пустой
     if (currentGameIds.isEmpty) return;
 
     logger.d(index);
-    logger.d(currentGameIds);
-    int step = direction > 0 ? 1 : -1;
-    for (int i = index + step; i >= 0 && i < characters.length; i += step) {
-      if (currentGameIds.contains(characters[i].id)) {
-        if (i == index) return; // Не меняем местами самого себя
+    // Создаём изменяемую копию списка персонажей
+    final mutableCharacters = List<Character>.from(_repository.characters);
+    int step = (direction > 0) ? 1 : -1;
+    for (int i = index; i >= 0 && i < mutableCharacters.length; i -= step) {
+      if (i == index) continue;
+      if (currentGameIds.contains(mutableCharacters[i].id)) {
         // Меняем местами с найденным персонажем
-        final tmp = characters[index];
-        characters[index] = characters[i];
-        characters[i] = tmp;
+        final tmp = mutableCharacters[index];
+        mutableCharacters[index] = mutableCharacters[i];
+        mutableCharacters[i] = tmp;
         _repository.clear();
-        _repository.addAll(characters);
+        _repository.addAll(mutableCharacters);
         persist();
         notifyListeners();
         return;

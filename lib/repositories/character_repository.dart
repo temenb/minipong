@@ -9,6 +9,9 @@ class CharacterRepository extends Repository<Character> {
 
   List<Character> get characters => items;
 
+  /// Возвращает массив id всех персонажей
+  List<String> get characterIds => items.map((c) => c.id).toList();
+
   void addCharacter(Character character) {
     add(character);
   }
