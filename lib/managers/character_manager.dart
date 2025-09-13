@@ -23,11 +23,7 @@ class CharacterManager extends ChangeNotifier {
     final character = Character(name: name);
     logger.d('CharacterManager.addCharacter: добавляем персонажа: id=${character.id}, name=${character.name}');
     _repository.addCharacter(character);
-
-    StorageService.instance.saveList(
-      'characters',
-      characters.map((c) => c.toJson()).toList(),
-    );
+    persist();
     notifyListeners();
   }
 
@@ -40,7 +36,14 @@ class CharacterManager extends ChangeNotifier {
     notifyListeners();
   }
 
-
+  void renameCharacter(String id, String newName) {
+    final character = _repository.getById(id);
+    if (character != null) {
+      character.name = newName;
+      persist();
+      notifyListeners();
+    }
+  }
 
   /// Сохраняет текущий список персонажей в StorageService
   Future<void> persist() async {
