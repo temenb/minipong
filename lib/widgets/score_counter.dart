@@ -21,6 +21,7 @@ class _ScoreCounterState extends State<ScoreCounter> {
       children: [
         // Первая колонка: первый дропдаун, счет, кнопка
         Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButton<String>(
               value: selected1,
@@ -28,15 +29,15 @@ class _ScoreCounterState extends State<ScoreCounter> {
               onChanged: (val) => setState(() => selected1 = val),
             ),
             Container(
-              width: 60,
-              height: 60,
+              width: 80,
+              height: 80,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.blue.shade100,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.blue, width: 2),
               ),
-              child: Text('$score1', style: const TextStyle(fontSize: 24)),
+              child: Text('$score1', style: const TextStyle(fontSize: 32)),
             ),
             IconButton(
               icon: const Icon(Icons.add),
@@ -46,18 +47,19 @@ class _ScoreCounterState extends State<ScoreCounter> {
         ),
         // Центральная колонка: стрелочки, замок, стрелочки
         Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 8),
+            // убрано пустое место сверху
             const Icon(Icons.swap_horiz, size: 28, color: Colors.grey), // верхние стрелочки
-            const SizedBox(height: 8),
-            const Icon(Icons.lock, size: 28, color: Colors.grey), // замок
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
+            const Icon(Icons.lock, size: 32, color: Colors.grey), // замок
+            const SizedBox(height: 32), // уменьшенный отступ для нижних стрелочек
             const Icon(Icons.swap_horiz, size: 28, color: Colors.grey), // нижние стрелочки
-            const SizedBox(height: 8),
           ],
         ),
         // Вторая колонка: второй дропдаун, счет, кнопка
         Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButton<String>(
               value: selected2,
@@ -65,15 +67,15 @@ class _ScoreCounterState extends State<ScoreCounter> {
               onChanged: (val) => setState(() => selected2 = val),
             ),
             Container(
-              width: 60,
-              height: 60,
+              width: 80,
+              height: 80,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.red.shade100,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.red, width: 2),
               ),
-              child: Text('$score2', style: const TextStyle(fontSize: 24)),
+              child: Text('$score2', style: const TextStyle(fontSize: 32)),
             ),
             IconButton(
               icon: const Icon(Icons.add),
