@@ -31,13 +31,10 @@ class MainAppScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 32), // отступ сверху
             const PlayButton(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8), // уменьшенный отступ
             Expanded(
               child: Center(
-                child: SizedBox(
-                  height: 400,
-                  child: CharactersList(),
-                ),
+                child: CharactersList(),
               ),
             ),
           ],

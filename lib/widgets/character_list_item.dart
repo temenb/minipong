@@ -115,12 +115,18 @@ class _CharacterListItemState extends State<CharacterListItem> {
               IconButton(
                 icon: const Icon(Icons.arrow_upward),
                 tooltip: 'Вверх',
-                onPressed: () {},
+                onPressed: () {
+                  final gameManager = Provider.of<GameManager>(context, listen: false);
+                  _characterManager.moveCharacterUp(widget.character.id, gameManager);
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.arrow_downward),
                 tooltip: 'Вниз',
-                onPressed: () {},
+                onPressed: () {
+                  final gameManager = Provider.of<GameManager>(context, listen: false);
+                  _characterManager.moveCharacterDown(widget.character.id, gameManager);
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),

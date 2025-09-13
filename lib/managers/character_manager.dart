@@ -3,12 +3,15 @@ import 'package:logger/logger.dart';
 import 'package:minipong/entity/character.dart';
 import 'package:minipong/repositories/character_repository.dart';
 import 'package:minipong/services/storage_service.dart';
+import 'package:minipong/managers/game_manager.dart';
 
 class CharacterManager extends ChangeNotifier {
   final CharacterRepository _repository = CharacterRepository.instance;
   final Logger logger = Logger();
 
   List<Character> get characters => _repository.characters;
+
+  CharacterManager();
 
   Future<void> initCharacters() async {
     await getAllFromStorage();
@@ -63,19 +66,48 @@ class CharacterManager extends ChangeNotifier {
     _repository.clear();
     _repository.addAll(list.map((json) => Character.fromJson(json)));
 
-    // final list = <Character>[
-    //   Character(id: '1', name: 'character 1'),
-    //   Character(id: '2', name: 'character 2'),
-    //   Character(id: '3', name: 'character 3'),
-    // ];
-    // clear();
-    // addAll(list);
-
     logger.d('CharacterManager.getAllFromStorage: получаем игроков:');
     for (final c in characters) {
       logger.d("id: '${c.id}', name: '${c.name}'");
     }
     notifyListeners();
   }
-}
 
+
+  void moveCharacterUp(String id, GameManager gameManager) {
+    _moveCharacter(id, 1, gameManager);
+  }
+  void moveCharacterDown(String id, GameManager gameManager) {
+    _moveCharacter(id, -1, gameManager);
+  }
+
+
+  void _moveCharacter(String id, int direction, GameManager gameManager) {
+    int index = characters.indexWhere((c) => c.id == id);
+    if (index == -1) return;
+    final currentGame = gameManager?.currentGame;//обьект равен нулл
+    if (currentGame == null) return;
+    final currentGameIds = currentGame.characterIds;
+    // Удаляем некорректную проверку: if (!currentGameIds) return;
+    // Вместо этого проверяем, что список не пустой
+    if (currentGameIds.isEmpty) return;
+
+    logger.d(index);
+    logger.d(currentGameIds);
+    int step = direction > 0 ? 1 : -1;
+    for (int i = index + step; i >= 0 && i < characters.length; i += step) {
+      if (currentGameIds.contains(characters[i].id)) {
+        if (i == index) return; // Не меняем местами самого себя
+        // Меняем местами с найденным персонажем
+        final tmp = characters[index];
+        characters[index] = characters[i];
+        characters[i] = tmp;
+        _repository.clear();
+        _repository.addAll(characters);
+        persist();
+        notifyListeners();
+        return;
+      }
+    }
+  }
+}
