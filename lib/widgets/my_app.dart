@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:minipong/widgets/characters_list.dart';
 import 'package:minipong/widgets/playbutton.dart';
 import 'package:minipong/widgets/play_screen.dart';
+import 'package:minipong/managers/game_manager.dart';
+import 'package:minipong/managers/character_manager.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +23,8 @@ class MainAppScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final characterManager = CharacterManager();
+    final gameManager = GameManager(characterManager);
     return MaterialApp(
       // theme: определяет стили приложения
       theme: ThemeData(
@@ -42,7 +46,7 @@ class MainAppScreen extends StatelessWidget {
         ),
       ),
       routes: {
-        '/play': (context) => PlayScreen(),
+        '/play': (context) => PlayScreen(gameManager: gameManager),
       },
     );
   }
