@@ -7,21 +7,4 @@ class BattleRepository extends Repository<Battle> {
 
   List<Battle> get battles => items;
 
-  void addBattle(Battle battle) => add(battle);
-
-  @override
-  Battle? getById(String id) {
-    try {
-      return items.firstWhere((b) => b.id == id);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  @override
-  void remove(String id) {
-    items.removeWhere((b) => b.id == id);
-  }
-
-  void clear() => super.clear();
 }

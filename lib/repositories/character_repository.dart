@@ -9,32 +9,4 @@ class CharacterRepository extends Repository<Character> {
 
   List<Character> get characters => items;
 
-  /// Возвращает массив id всех персонажей
-  List<String> get characterIds => items.map((c) => c.id).toList();
-
-  void addCharacter(Character character) {
-    add(character);
-  }
-
-  @override
-  Character? getById(String id) {
-    try {
-      return items.firstWhere((c) => c.id == id);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  @override
-  void removeById(String id) {
-    final index = items.indexWhere((c) => c.id == id);
-    if (index == -1) {
-      return;
-    }
-    remove(index);
-  }
-
-  void clear() {
-    super.clear();
-  }
 }
