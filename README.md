@@ -11,33 +11,31 @@
 - Быстрое добавление голов с помощью кнопок и горячих клавиш (Ctrl/Space/Enter)
 - История голов и партий
 
-## Запуск
+## Установка и запуск из монорепозитория
 
-1. Установите [Flutter](https://flutter.dev/docs/get-started/install).
-2. Клонируйте репозиторий:
+1. Установите [pnpm](https://pnpm.io/):
+   ```bash
+   npm install -g pnpm
    ```
-   git clone <адрес репозитория>
+2. Установите зависимости для всех пакетов:
+   ```bash
+   pnpm install
    ```
-3. Перейдите в папку проекта:
+3. Для запуска backend-сервисов используйте:
+   ```bash
+   pnpm run dev -F services/auth
+   pnpm run dev -F services/engine
+   pnpm run dev -F services/gateway
+   pnpm run dev -F services/profile
    ```
-   cd minipong
+   Или запустите все сервисы через Docker Compose:
+   ```bash
+   docker-compose up --build
    ```
-4. Запустите приложение:
-   ```
+4. Для запуска фронтенда (Flutter):
+   ```bash
+   cd front
+   flutter pub get
    flutter run
-   ```
+   
 
-## Структура
-
-- `lib/main.dart` — основной код приложения
-- `lib/game_rules.dart` — логика игры (если используется)
-- `README.md` — описание проекта
-
-## Горячие клавиши
-
-- **Ctrl** или **Пробел** — добавить гол левому игроку
-- **Enter** — добавить гол правому игроку
-
-## Лицензия
-
-MIT

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "common/health.proto";
+import "common/empty.proto";
+
+package profile;
+
+service Profile {
+  rpc Health(common.empty.Empty) returns (common.health.HealthReport);
+  rpc Status(common.empty.Empty) returns (common.health.StatusInfo);
+  rpc Livez(common.empty.Empty) returns (common.health.LiveStatus);
+  rpc Readyz(common.empty.Empty) returns (common.health.ReadyStatus);
+
+  rpc Upsert (UpsertRequest) returns (ProfileResponse);
+  rpc View (ViewRequest) returns (ProfileResponse);
+}
+
+message UpsertRequest {
+  string owner_id = 1;
+}
+
+message ViewRequest {
+  string profile_id = 1;
+}
+
+message ProfileResponse {
+  string profile_id = 1;
+  string owner_id = 2;
+  string nickname = 3;
+}

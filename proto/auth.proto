@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+import "common/health.proto";
+import "common/empty.proto";
+
+package auth;
+
+service Auth {
+  rpc Health(common.empty.Empty) returns (common.health.HealthReport);
+  rpc Status(common.empty.Empty) returns (common.health.StatusInfo);
+  rpc Livez(common.empty.Empty) returns (common.health.LiveStatus);
+  rpc Readyz(common.empty.Empty) returns (common.health.ReadyStatus);
+
+  rpc Register (RegisterRequest) returns (AuthResponse);
+  rpc Login (LoginRequest) returns (AuthResponse);
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
+  rpc RefreshTokens (RefreshTokensRequest) returns (AuthResponse);
+  rpc ForgotPassword(ForgotPasswordRequest) returns (common.empty.Empty);
+  rpc ResetPassword(ResetPasswordRequest) returns (AuthResponse);
+  rpc AnonymousSignIn(AnonymousSignInRequest) returns (AuthResponse);
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message AuthResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  string user_id = 3;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message RefreshTokensRequest {
+  string token = 1;
+}
+
+message LogoutRequest {
+  string user_id = 1;
+}
+
+message LogoutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+message ResetPasswordRequest {
+  string token = 1;
+  string new_password = 2;
+}
+
+message AnonymousSignInRequest {
+  string device_id = 1;
+}
