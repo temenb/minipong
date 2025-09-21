@@ -13,6 +13,7 @@ service Profile {
 
   rpc Upsert (UpsertRequest) returns (ProfileResponse);
   rpc View (ViewRequest) returns (ProfileResponse);
+  rpc GetAll (common.empty.Empty) returns (ProfileListResponse);
 }
 
 message UpsertRequest {
@@ -20,11 +21,15 @@ message UpsertRequest {
 }
 
 message ViewRequest {
-  string profile_id = 1;
+  string id = 1;
 }
 
 message ProfileResponse {
-  string profile_id = 1;
+  string id = 1;
   string owner_id = 2;
   string nickname = 3;
+}
+
+message ProfileListResponse {
+  repeated ProfileResponse profiles = 1;
 }

@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
-import * as ProfileGrpc from '../../generated/profile';
-import * as HealthGrpc from '../../generated/common/health';
-import * as EmptyGrpc from '../../generated/common/empty';
+import * as ProfileGrpc from '../generated/profile';
+import * as HealthGrpc from '../generated/common/health';
+import * as EmptyGrpc from '../generated/common/empty';
 import config from '../../config/config';
 import {GrpcClientManager} from '@shared/grpc-client-manager';
 

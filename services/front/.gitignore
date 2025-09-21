@@ -73,7 +73,7 @@ linux/flutter/ephemeral/
 
 # ---------- Env / конфиги ----------
 .env
-.env.*
+.env.*.local
 **/*.pem
 **/*.p12
 **/*.crt

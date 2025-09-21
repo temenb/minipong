@@ -82,26 +82,30 @@ commit-all:
 
 PROTO_FILES := $(shell find proto -name '*.proto')
 
+
+NODE_PROTO_PATH=./src/grpc/generated
+FLUTTER_PROTO_PATH=./lib/src/grpc/generated
+
 proto-generate:
 	@echo '🚀 Proto generate...'
 
 	@for dir in $(NODE_SERVICES); do \
 		echo "\033[1;33m[*] Checking $$dir...\033[0m"; \
-		rm -rf $(SERVICE_DIR)/$$dir/src/generated; \
-		mkdir -p $(SERVICE_DIR)/$$dir/src/generated; \
+		rm -rf $(SERVICE_DIR)/$$dir/${NODE_PROTO_PATH}; \
+		mkdir -p $(SERVICE_DIR)/$$dir/${NODE_PROTO_PATH}; \
 	done
 
 	@for dir in $(FLUTTER_SERVICES); do \
 		echo "\033[1;33m[*] Checking $$dir...\033[0m"; \
-		rm -rf $(SERVICE_DIR)/$$dir/lib/grpc/generated; \
-		mkdir -p $(SERVICE_DIR)/$$dir/lib/grpc/generated; \
+		rm -rf $(SERVICE_DIR)/$$dir/${FLUTTER_PROTO_PATH}; \
+		mkdir -p $(SERVICE_DIR)/$$dir/${FLUTTER_PROTO_PATH}; \
 	done
 
 	@for dir in $(NODE_SERVICES); do \
 		echo "\033[1;34m[>] Generating proto for $$dir...\033[0m"; \
 		npx protoc \
 			--plugin=./node_modules/.bin/protoc-gen-ts_proto \
-			--ts_proto_out=$(SERVICE_DIR)/$$dir/src/generated \
+			--ts_proto_out=$(SERVICE_DIR)/$$dir/${NODE_PROTO_PATH} \
 			--ts_proto_opt=outputServices=grpc-js,useExactTypes=false,esModuleInterop=true \
 			--proto_path=./proto \
 			$(PROTO_FILES); \
@@ -110,10 +114,8 @@ proto-generate:
 
 	@for dir in $(FLUTTER_SERVICES); do \
 		echo "\033[1;34m[>] Generating proto for $$dir...\033[0m"; \
-		rm -rf $(SERVICE_DIR)/$$dir/lib/generated; \
-		mkdir -p $(SERVICE_DIR)/$$dir/lib/generated; \
 		protoc \
-			--dart_out=grpc:$(SERVICE_DIR)/$$dir/lib/grpc/generated \
+			--dart_out=grpc:$(SERVICE_DIR)/$$dir/${FLUTTER_PROTO_PATH} \
 			--proto_path=./proto \
 			$(PROTO_FILES); \
 		echo "\033[1;32m[✓] $$dir done\033[0m"; \

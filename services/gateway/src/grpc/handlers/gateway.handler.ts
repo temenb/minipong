@@ -1,8 +1,8 @@
 import * as grpc from '@grpc/grpc-js';
-import * as AuthGrpc from '../../generated/auth';
+import * as AuthGrpc from '../generated/auth';
 import * as AuthService from '../../services/auth.service';
 import * as ProfileService from '../../services/profile.service';
-import * as ProfileGrpc from '../../generated/profile';
+import * as ProfileGrpc from '../generated/profile';
 import {getProfile} from "../../services/profile.service";
 
 export const callbackError = (callback: grpc.sendUnaryData<any>, err: unknown) => {

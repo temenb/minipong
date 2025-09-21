@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
-import * as AsteroidGrpc from '../../generated/asteroid';
-import * as HealthGrpc from '../../generated/common/health';
-import * as EmptyGrpc from '../../generated/common/empty';
+import * as AsteroidGrpc from '../generated/asteroid';
+import * as HealthGrpc from '../generated/common/health';
+import * as EmptyGrpc from '../generated/common/empty';
 import config from '../../config/config';
 import {GrpcClientManager} from '@shared/grpc-client-manager';
 
