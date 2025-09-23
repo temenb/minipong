@@ -81,10 +81,10 @@ export const logout = async (
   call: grpc.ServerUnaryCall<AuthGrpc.LogoutRequest, AuthGrpc.LogoutResponse>,
   callback: grpc.sendUnaryData<AuthGrpc.LogoutResponse>
 ) => {
-  const {userId} = call.request;
+  const {id} = call.request;
 
   try {
-    const response = await authService.logout(userId);
+    const response = await authService.logout(id);
 
     callback(null, response);
 

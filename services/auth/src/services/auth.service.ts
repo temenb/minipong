@@ -34,14 +34,14 @@ export const anonymousSignIn = async (deviceId: string) => {
 
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
-  const userId = user.id;
+  const id = user.id;
 
   await prisma.user.update({
     where: {id: user.id},
     data: {refreshToken},
   });
 
-  return {accessToken, refreshToken, userId};
+  return {accessToken, refreshToken, id};
 };
 
 export const login = async (email: string, password: string) => {
@@ -53,14 +53,14 @@ export const login = async (email: string, password: string) => {
 
   const accessToken = generateAccessToken(user.id);
   const refreshToken = generateRefreshToken(user.id);
-  const userId = user.id;
+  const id = user.id;
 
   await prisma.user.update({
     where: {id: user.id},
     data: {refreshToken},
   });
 
-  return {accessToken, refreshToken, userId};
+  return {accessToken, refreshToken, id};
 };
 
 export const refreshTokens = async (token: string) => {
@@ -76,12 +76,12 @@ export const refreshTokens = async (token: string) => {
     data: {refreshToken: newRefreshToken},
   });
 
-  return {accessToken: newAccessToken, refreshToken: newRefreshToken, userId: user.id};
+  return {accessToken: newAccessToken, refreshToken: newRefreshToken, id: user.id};
 };
 
-export const logout = async (userId: string) => {
+export const logout = async (id: string) => {
   await prisma.user.update({
-    where: {id: userId},
+    where: {id: id},
     data: {refreshToken: null},
   });
 
@@ -91,16 +91,16 @@ export const logout = async (userId: string) => {
   };
 };
 
-export const forgotPassword = async (userId: string) => {
+export const forgotPassword = async (id: string) => {
   // await prisma.user.update({
-  //     where: { id: userId },
+  //     where: { id },
   //     data: { refreshToken: null },
   // });
 };
 
-export const resetPassword = async (userId: string) => {
+export const resetPassword = async (id: string) => {
   // await prisma.user.update({
-  //     where: { id: userId },
+  //     where: { id },
   //     data: { refreshToken: null },
   // });
 };

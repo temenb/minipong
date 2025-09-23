@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import {ProfileService} from './generated/profile';
+import {ProfileService} from './grpc/generated/profile';
 import * as grpc from '@grpc/grpc-js';
 import * as profileHandler from "./grpc/handlers/profile.handler";
 import kafkaConfig, {createUserConsumerConfig} from "./config/kafka.config";

@@ -10,8 +10,8 @@ export const login = async (email: string, password: string) =>
 export const refreshTokens = async (token: string) =>
   await AuthClient.refreshTokens(token);
 
-export const logout = async (userId: string) =>
-  await AuthClient.logout(userId);
+export const logout = async (id: string) =>
+  await AuthClient.logout(id);
 
 export const forgotPassword = async (email: string) =>
   await AuthClient.forgotPassword(email);

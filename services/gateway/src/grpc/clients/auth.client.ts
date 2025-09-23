@@ -49,8 +49,8 @@ export const refreshTokens = (token: string): Promise<AuthGrpc.AuthResponse | nu
   return authManager.call((client, cb) => client.refreshTokens(grpcRequest, cb));
 };
 
-export const logout = (userId: string): Promise<AuthGrpc.LogoutResponse | null> => {
-  const grpcRequest: AuthGrpc.LogoutRequest = {userId};
+export const logout = (id: string): Promise<AuthGrpc.LogoutResponse | null> => {
+  const grpcRequest: AuthGrpc.LogoutRequest = {id};
   return authManager.call((client, cb) => client.logout(grpcRequest, cb));
 };
 

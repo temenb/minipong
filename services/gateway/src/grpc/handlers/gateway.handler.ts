@@ -31,9 +31,9 @@ export const viewProfile = async (
   call: grpc.ServerUnaryCall<ProfileGrpc.ViewRequest, ProfileGrpc.ProfileResponse>,
   callback: grpc.sendUnaryData<ProfileGrpc.ProfileResponse>
 ) => {
-  const { profileId } = call.request;
+  const { id } = call.request;
   try {
-    const result = await ProfileService.getProfile(profileId);
+    const result = await ProfileService.getProfile(id);
     callback(null, result);
   } catch (err: any) {
     callback({

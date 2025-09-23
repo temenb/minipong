@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:minipong/feature/profile/application/profile_manager_provider.dart';
+import 'package:minipong/feature/profile/providers/profile_manager_provider.dart';
 
 class ProfileListScreen extends ConsumerWidget {
   @override

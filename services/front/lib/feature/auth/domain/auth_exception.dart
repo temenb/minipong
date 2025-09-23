@@ -13,7 +13,7 @@
 //   String toString() => 'ProfileException($type): $message';
 // }
 //
-// enum ProfileExceptionType {
+// enum AuthExceptionType {
 //   notFound,
 //   network,
 //   grpc,

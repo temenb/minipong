@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: game-postgres
+    container_name: minipong-postgres
     image: postgres:17.6
     restart: always
     environment:
@@ -19,7 +19,7 @@ services:
       start_period: 10s
 
 #  mongo:
-#    container_name: game-mongo
+#    container_name: minipong-mongo
 #    image: mongo:8
 #    restart: always
 #    ports:
@@ -27,7 +27,7 @@ services:
 #    environment:
 #      MONGO_INITDB_ROOT_USERNAME: mongo
 #      MONGO_INITDB_ROOT_PASSWORD: mongo
-#      MONGO_INITDB_DATABASE: game
+#      MONGO_INITDB_DATABASE: minipong
 #    volumes:
 #      - mongo_data:/data/db
 #    healthcheck:
@@ -38,7 +38,7 @@ services:
 #      start_period: 10s
 
   gateway:
-    container_name: game-gateway
+    container_name: minipong-gateway
     build:
       context: .
       dockerfile: services/gateway/Dockerfile
@@ -56,7 +56,7 @@ services:
     command: pnpm dlx turbo run dev --parallel
 
   auth:
-    container_name: game-auth
+    container_name: minipong-auth
     build:
       context: .
       dockerfile: services/auth/Dockerfile
@@ -76,7 +76,7 @@ services:
     command: pnpm dlx turbo run dev --parallel
 
   profile:
-    container_name: game-profile
+    container_name: minipong-profile
     build:
       context: .
       dockerfile: services/profile/Dockerfile
@@ -96,7 +96,7 @@ services:
     command: pnpm dlx turbo run dev --parallel
 
   engine:
-    container_name: game-engine
+    container_name: minipong-engine
     build:
       context: .
       dockerfile: services/engine/Dockerfile
@@ -111,7 +111,7 @@ services:
     command: pnpm dlx turbo run dev --parallel
 
 #  mail:
-#    container_name: game-mail
+#    container_name: minipong-mail
 #    build:
 #      context: .
 #      dockerfile: services/mail/Dockerfile
@@ -126,7 +126,7 @@ services:
 #        condition: service_healthy
 
   kafka:
-    container_name: game-kafka
+    container_name: minipong-kafka
     image: bitnami/kafka:4.0
     ports:
       - "9092:9092"
@@ -151,7 +151,7 @@ services:
 
 #  mailpit:
 #    image: axllent/mailpit
-#    container_name: game-mailpit
+#    container_name: minipong-mailpit
 #    ports:
 #      - 8025:8025
 #      - 1025:1025

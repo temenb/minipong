@@ -20,7 +20,7 @@ export const upsert = async (
     const result = await ProfileService.upsertProfile(ownerId);
 
     callback(null, {
-      profileId: result.id,
+      id: result.id,
       ownerId: result.ownerId,
       nickname: result.nickname,
     });
@@ -48,7 +48,7 @@ export const getProfile = async (
     }
 
     callback(null, {
-      profileId: result.id,
+      id: result.id,
       ownerId: result.ownerId,
       nickname: result.nickname,
     });

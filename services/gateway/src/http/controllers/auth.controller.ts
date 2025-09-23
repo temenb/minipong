@@ -35,8 +35,8 @@ export const refreshTokens = wrapper(async (req, res) => {
 });
 
 export const logout = wrapper(async (req, res) => {
-  const userId = getUserId(req);
-  return AuthService.logout(userId);
+  const id = getUserId(req);
+  return AuthService.logout(id);
 });
 
 export const forgotPassword = wrapper(async (req, res) => {

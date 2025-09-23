@@ -1,7 +1,7 @@
 import * as ProfileClient from "../grpc/clients/profile.client";
 
-export const getProfile = async (userId: string) =>
-  await ProfileClient.getProfile(userId);
+export const getProfile = async (id: string) =>
+  await ProfileClient.getProfile(id);
 
 export const health = async () =>
   await ProfileClient.health();

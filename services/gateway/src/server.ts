@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import {GatewayService} from './generated/gateway';
+import {GatewayService} from './grpc/generated/gateway';
 import * as grpc from '@grpc/grpc-js';
 import * as gatewayHandler from "./grpc/handlers/gateway.handler";
 
