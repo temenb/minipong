@@ -12,6 +12,21 @@ FLUTTER_SERVICES := front
 
 NODE_BIN=./node_modules/.bin
 
+init:
+	@echo "🔧 Инициализация проекта"
+	@echo "🚀 Запуск docker compose (поднимаем все сервисы)..."
+	docker compose up -d
+	@echo "⏳ Ожидание запуска контейнеров (10 секунд)..."
+	sleep 10
+	@echo "🔍 Генерация Prisma клиентов для всех сервисов..."
+	make prisma-generate
+	@echo "🚀 Применение миграций Prisma для всех сервисов..."
+	make prisma-migrate
+	@echo "🌱 Запуск сидов для всех сервисов..."
+	make seed
+	@echo "👤 Создание админа через gateway..."
+	docker compose exec -T -w /usr/src/app/services/gateway gateway npx ts-node src/scripts/create-admin.ts
+
 prisma-migrate:
 	@echo '🚀 Apply migrations...'
 	@for service in $(PRISMA_SERVICES); do \
