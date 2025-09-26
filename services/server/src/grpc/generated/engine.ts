@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.7.7
 //   protoc               v6.32.1
-// source: server.proto
+// source: engine.proto
 
 /* eslint-disable */
 import {
@@ -20,12 +20,12 @@ import {
 import { Empty } from "./common/empty";
 import { HealthReport, LiveStatus, ReadyStatus, StatusInfo } from "./common/health";
 
-export const protobufPackage = "server";
+export const protobufPackage = "engine";
 
-export type ServerService = typeof ServerService;
-export const ServerService = {
+export type EngineService = typeof EngineService;
+export const EngineService = {
   health: {
-    path: "/server.Server/Health",
+    path: "/engine.Engine/Health",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -34,7 +34,7 @@ export const ServerService = {
     responseDeserialize: (value: Buffer): HealthReport => HealthReport.decode(value),
   },
   status: {
-    path: "/server.Server/Status",
+    path: "/engine.Engine/Status",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -43,7 +43,7 @@ export const ServerService = {
     responseDeserialize: (value: Buffer): StatusInfo => StatusInfo.decode(value),
   },
   livez: {
-    path: "/server.Server/Livez",
+    path: "/engine.Engine/Livez",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -52,7 +52,7 @@ export const ServerService = {
     responseDeserialize: (value: Buffer): LiveStatus => LiveStatus.decode(value),
   },
   readyz: {
-    path: "/server.Server/Readyz",
+    path: "/engine.Engine/Readyz",
     requestStream: false,
     responseStream: false,
     requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
@@ -62,14 +62,14 @@ export const ServerService = {
   },
 } as const;
 
-export interface ServerServer extends UntypedServiceImplementation {
+export interface EngineServer extends UntypedServiceImplementation {
   health: handleUnaryCall<Empty, HealthReport>;
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
 }
 
-export interface ServerClient extends Client {
+export interface EngineClient extends Client {
   health(request: Empty, callback: (error: ServiceError | null, response: HealthReport) => void): ClientUnaryCall;
   health(
     request: Empty,
@@ -120,8 +120,8 @@ export interface ServerClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const ServerClient = makeGenericClientConstructor(ServerService, "server.Server") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): ServerClient;
-  service: typeof ServerService;
+export const EngineClient = makeGenericClientConstructor(EngineService, "engine.Engine") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): EngineClient;
+  service: typeof EngineService;
   serviceName: string;
 };

@@ -12,7 +12,7 @@ COPY services/gateway/package*.json ./services/gateway/
 COPY services/gateway/jest.config.js ./services/gateway/
 COPY services/gateway/tsconfig.json ./services/gateway/
 COPY services/gateway/src ./services/gateway/src/
-COPY services/auth/prisma ./services/auth/prisma/
+COPY services/gateway/prisma ./services/gateway/prisma/
 COPY services/gateway/__tests__ ./services/gateway/__tests__/
 
 USER root

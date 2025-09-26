@@ -1,19 +1,29 @@
-PRISMA_SERVICES := auth profile engine
-SERVICE_DIR := services
-
-DRY_RUN ?= false
-DRY_RUN ?= true
-COMMIT_MSG ?= anonymous-sign-in done
-
-NODE_SERVICES := gateway auth profile engine
-FLUTTER_SERVICES := front
-
-
+include parameters.mk
 
 NODE_BIN=./node_modules/.bin
+SERVICE_DIR := services
 
-init:
+PROTO_FILES := $(shell find proto -name '*.proto')
+
+
+NODE_PROTO_PATH=./src/grpc/generated
+FLUTTER_PROTO_PATH=./lib/src/grpc/generated
+
+install:
 	@echo "🔧 Инициализация проекта"
+	@echo "📦 Проверка .env файлов для всех сервисов..."
+	@for service in $(NODE_SERVICES) $(FLUTTER_SERVICES); do \
+		ENV_PATH="$(SERVICE_DIR)/$$service/.env"; \
+		ENV_EXAMPLE_PATH="$(SERVICE_DIR)/$$service/.env.example"; \
+		if [ ! -f "$$ENV_PATH" ] && [ -f "$$ENV_EXAMPLE_PATH" ]; then \
+			echo "[env] Копирую .env.example для $$service"; \
+			cp "$$ENV_EXAMPLE_PATH" "$$ENV_PATH"; \
+		fi; \
+	done
+	@echo "📦 Установка зависимостей в корне монорепо..."
+	pnpm install
+	@echo "📦 Установка зависимостей для всех сервисов..."
+	make proto-generate
 	@echo "🚀 Запуск docker compose (поднимаем все сервисы)..."
 	docker compose up -d
 	@echo "⏳ Ожидание запуска контейнеров (10 секунд)..."
@@ -25,7 +35,6 @@ init:
 	@echo "🌱 Запуск сидов для всех сервисов..."
 	make seed
 	@echo "👤 Создание админа через gateway..."
-	docker compose exec -T -w /usr/src/app/services/gateway gateway npx ts-node src/scripts/create-admin.ts
 
 prisma-migrate:
 	@echo '🚀 Apply migrations...'
@@ -49,7 +58,7 @@ seed:
     done
 
 commit-all:
-	@for dir in $(NODE_SERVICES) $(FLUTTER_SERVICES); do \
+	@for dir in $(GIT_SERVICES); do \
 		echo "\033[1;33m[*] Checking $$dir...\033[0m"; \
 		SERVICE_PATH="$(SERVICE_DIR)/$$dir"; \
 		if [ ! -d "$$SERVICE_PATH/.git" ]; then \
@@ -93,13 +102,6 @@ commit-all:
 			fi; \
 		fi; \
 	fi;
-
-
-PROTO_FILES := $(shell find proto -name '*.proto')
-
-
-NODE_PROTO_PATH=./src/grpc/generated
-FLUTTER_PROTO_PATH=./lib/src/grpc/generated
 
 proto-generate:
 	@echo '🚀 Proto generate...'
