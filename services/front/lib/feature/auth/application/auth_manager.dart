@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import './../domain/auth.dart';
 import './../domain/auth_repository.dart';
-import './../domain/auth_repository_provider.dart';
+import '../providers/auth_repository_provider.dart';
 
 class AuthManager extends AsyncNotifier<List<Auth>> {
   late final AuthRepository _repository;

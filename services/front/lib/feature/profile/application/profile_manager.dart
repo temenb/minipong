@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import './../domain/profile.dart';
 import './../domain/profile_repository.dart';
-import './../domain/profile_repository_provider.dart';
+import '../providers/profile_repository_provider.dart';
 
 class ProfileManager extends AsyncNotifier<List<Profile>> {
   late final ProfileRepository _repository;
