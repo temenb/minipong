@@ -40,14 +40,14 @@ class GatewayClient extends $grpc.Client {
       '/gateway.Gateway/Readyz',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $1.ReadyStatus.fromBuffer(value));
-  static final _$anonymousSignIn = $grpc.ClientMethod<$2.AnonymousSignInRequest, $2.AuthResponse>(
+  static final _$anonymousSignIn = $grpc.ClientMethod<$2.AnonymousSignInRequest, $2.AuthObject>(
       '/gateway.Gateway/AnonymousSignIn',
       ($2.AnonymousSignInRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $2.AuthResponse.fromBuffer(value));
-  static final _$viewProfile = $grpc.ClientMethod<$3.ViewRequest, $3.ProfileResponse>(
+      ($core.List<$core.int> value) => $2.AuthObject.fromBuffer(value));
+  static final _$viewProfile = $grpc.ClientMethod<$3.ViewRequest, $3.ProfileObject>(
       '/gateway.Gateway/ViewProfile',
       ($3.ViewRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $3.ProfileResponse.fromBuffer(value));
+      ($core.List<$core.int> value) => $3.ProfileObject.fromBuffer(value));
 
   GatewayClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -71,11 +71,11 @@ class GatewayClient extends $grpc.Client {
     return $createUnaryCall(_$readyz, request, options: options);
   }
 
-  $grpc.ResponseFuture<$2.AuthResponse> anonymousSignIn($2.AnonymousSignInRequest request, {$grpc.CallOptions? options}) {
+  $grpc.ResponseFuture<$2.AuthObject> anonymousSignIn($2.AnonymousSignInRequest request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$anonymousSignIn, request, options: options);
   }
 
-  $grpc.ResponseFuture<$3.ProfileResponse> viewProfile($3.ViewRequest request, {$grpc.CallOptions? options}) {
+  $grpc.ResponseFuture<$3.ProfileObject> viewProfile($3.ViewRequest request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$viewProfile, request, options: options);
   }
 }
@@ -113,20 +113,20 @@ abstract class GatewayServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($1.ReadyStatus value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$2.AnonymousSignInRequest, $2.AuthResponse>(
+    $addMethod($grpc.ServiceMethod<$2.AnonymousSignInRequest, $2.AuthObject>(
         'AnonymousSignIn',
         anonymousSignIn_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $2.AnonymousSignInRequest.fromBuffer(value),
-        ($2.AuthResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$3.ViewRequest, $3.ProfileResponse>(
+        ($2.AuthObject value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$3.ViewRequest, $3.ProfileObject>(
         'ViewProfile',
         viewProfile_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $3.ViewRequest.fromBuffer(value),
-        ($3.ProfileResponse value) => value.writeToBuffer()));
+        ($3.ProfileObject value) => value.writeToBuffer()));
   }
 
   $async.Future<$1.HealthReport> health_Pre($grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
@@ -145,11 +145,11 @@ abstract class GatewayServiceBase extends $grpc.Service {
     return readyz(call, await request);
   }
 
-  $async.Future<$2.AuthResponse> anonymousSignIn_Pre($grpc.ServiceCall call, $async.Future<$2.AnonymousSignInRequest> request) async {
+  $async.Future<$2.AuthObject> anonymousSignIn_Pre($grpc.ServiceCall call, $async.Future<$2.AnonymousSignInRequest> request) async {
     return anonymousSignIn(call, await request);
   }
 
-  $async.Future<$3.ProfileResponse> viewProfile_Pre($grpc.ServiceCall call, $async.Future<$3.ViewRequest> request) async {
+  $async.Future<$3.ProfileObject> viewProfile_Pre($grpc.ServiceCall call, $async.Future<$3.ViewRequest> request) async {
     return viewProfile(call, await request);
   }
 
@@ -157,6 +157,6 @@ abstract class GatewayServiceBase extends $grpc.Service {
   $async.Future<$1.StatusInfo> status($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$1.LiveStatus> livez($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$1.ReadyStatus> readyz($grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$2.AuthResponse> anonymousSignIn($grpc.ServiceCall call, $2.AnonymousSignInRequest request);
-  $async.Future<$3.ProfileResponse> viewProfile($grpc.ServiceCall call, $3.ViewRequest request);
+  $async.Future<$2.AuthObject> anonymousSignIn($grpc.ServiceCall call, $2.AnonymousSignInRequest request);
+  $async.Future<$3.ProfileObject> viewProfile($grpc.ServiceCall call, $3.ViewRequest request);
 }

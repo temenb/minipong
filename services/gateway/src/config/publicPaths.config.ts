@@ -33,4 +33,9 @@ export const publicPaths = [
   '/engine/status',
   '/engine/livez',
   '/engine/readyz',
+
+  '/server/health',
+  '/server/status',
+  '/server/livez',
+  '/server/readyz',
 ];

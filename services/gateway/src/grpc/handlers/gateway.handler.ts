@@ -1,19 +1,14 @@
 import * as grpc from '@grpc/grpc-js';
 import * as AuthGrpc from '../generated/auth';
+import * as ProfileGrpc from '../generated/profile';
 import * as AuthService from '../../services/auth.service';
 import * as ProfileService from '../../services/profile.service';
-import * as ProfileGrpc from '../generated/profile';
-import {getProfile} from "../../services/profile.service";
-
-export const callbackError = (callback: grpc.sendUnaryData<any>, err: unknown) => {
-  const message = err instanceof Error ? err.message : 'Unknown error';
-  callback({code: grpc.status.INTERNAL, message}, null);
-};
+import {callbackError} from './callback.error';
 
 
 export const anonymousSignIn = async (
-  call: grpc.ServerUnaryCall<AuthGrpc.AnonymousSignInRequest, AuthGrpc.AuthResponse>,
-  callback: grpc.sendUnaryData<AuthGrpc.AuthResponse>
+  call: grpc.ServerUnaryCall<AuthGrpc.AnonymousSignInRequest, AuthGrpc.AuthObject>,
+  callback: grpc.sendUnaryData<AuthGrpc.AuthObject>
 ) => {
   const { deviceId } = call.request;
   try {
@@ -28,8 +23,8 @@ export const anonymousSignIn = async (
 };
 
 export const viewProfile = async (
-  call: grpc.ServerUnaryCall<ProfileGrpc.ViewRequest, ProfileGrpc.ProfileResponse>,
-  callback: grpc.sendUnaryData<ProfileGrpc.ProfileResponse>
+  call: grpc.ServerUnaryCall<ProfileGrpc.ViewRequest, ProfileGrpc.ProfileObject>,
+  callback: grpc.sendUnaryData<ProfileGrpc.ProfileObject>
 ) => {
   const { id } = call.request;
   try {

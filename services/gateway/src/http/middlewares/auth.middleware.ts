@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
 import {config} from '../config/config';
-import * as AuthGrpc from "generated/auth";
+import * as AuthGrpc from "../generated/auth";
 
 
 type RegisterAnonymousCallback = () => Promise<AuthGrpc.AuthResponse>;

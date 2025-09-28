@@ -11,6 +11,7 @@
 
 import 'dart:core' as $core;
 
+import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class UpsertRequest extends $pb.GeneratedMessage {
@@ -113,11 +114,14 @@ class ViewRequest extends $pb.GeneratedMessage {
   void clearId() => clearField(1);
 }
 
-class ProfileResponse extends $pb.GeneratedMessage {
-  factory ProfileResponse({
+class ProfileObject extends $pb.GeneratedMessage {
+  factory ProfileObject({
     $core.String? id,
     $core.String? ownerId,
     $core.String? nickname,
+    $fixnum.Int64? level,
+    $fixnum.Int64? rating,
+    $fixnum.Int64? experience,
   }) {
     final $result = create();
     if (id != null) {
@@ -129,16 +133,28 @@ class ProfileResponse extends $pb.GeneratedMessage {
     if (nickname != null) {
       $result.nickname = nickname;
     }
+    if (level != null) {
+      $result.level = level;
+    }
+    if (rating != null) {
+      $result.rating = rating;
+    }
+    if (experience != null) {
+      $result.experience = experience;
+    }
     return $result;
   }
-  ProfileResponse._() : super();
-  factory ProfileResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory ProfileResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  ProfileObject._() : super();
+  factory ProfileObject.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ProfileObject.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProfileResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'profile'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProfileObject', package: const $pb.PackageName(_omitMessageNames ? '' : 'profile'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'id')
     ..aOS(2, _omitFieldNames ? '' : 'ownerId')
     ..aOS(3, _omitFieldNames ? '' : 'nickname')
+    ..aInt64(4, _omitFieldNames ? '' : 'level')
+    ..aInt64(5, _omitFieldNames ? '' : 'rating')
+    ..aInt64(6, _omitFieldNames ? '' : 'experience')
     ..hasRequiredFields = false
   ;
 
@@ -146,22 +162,22 @@ class ProfileResponse extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  ProfileResponse clone() => ProfileResponse()..mergeFromMessage(this);
+  ProfileObject clone() => ProfileObject()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  ProfileResponse copyWith(void Function(ProfileResponse) updates) => super.copyWith((message) => updates(message as ProfileResponse)) as ProfileResponse;
+  ProfileObject copyWith(void Function(ProfileObject) updates) => super.copyWith((message) => updates(message as ProfileObject)) as ProfileObject;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static ProfileResponse create() => ProfileResponse._();
-  ProfileResponse createEmptyInstance() => create();
-  static $pb.PbList<ProfileResponse> createRepeated() => $pb.PbList<ProfileResponse>();
+  static ProfileObject create() => ProfileObject._();
+  ProfileObject createEmptyInstance() => create();
+  static $pb.PbList<ProfileObject> createRepeated() => $pb.PbList<ProfileObject>();
   @$core.pragma('dart2js:noInline')
-  static ProfileResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProfileResponse>(create);
-  static ProfileResponse? _defaultInstance;
+  static ProfileObject getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProfileObject>(create);
+  static ProfileObject? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get id => $_getSZ(0);
@@ -189,50 +205,33 @@ class ProfileResponse extends $pb.GeneratedMessage {
   $core.bool hasNickname() => $_has(2);
   @$pb.TagNumber(3)
   void clearNickname() => clearField(3);
-}
 
-class ProfileListResponse extends $pb.GeneratedMessage {
-  factory ProfileListResponse({
-    $core.Iterable<ProfileResponse>? profiles,
-  }) {
-    final $result = create();
-    if (profiles != null) {
-      $result.profiles.addAll(profiles);
-    }
-    return $result;
-  }
-  ProfileListResponse._() : super();
-  factory ProfileListResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory ProfileListResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$pb.TagNumber(4)
+  $fixnum.Int64 get level => $_getI64(3);
+  @$pb.TagNumber(4)
+  set level($fixnum.Int64 v) { $_setInt64(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasLevel() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearLevel() => clearField(4);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProfileListResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'profile'), createEmptyInstance: create)
-    ..pc<ProfileResponse>(1, _omitFieldNames ? '' : 'profiles', $pb.PbFieldType.PM, subBuilder: ProfileResponse.create)
-    ..hasRequiredFields = false
-  ;
+  @$pb.TagNumber(5)
+  $fixnum.Int64 get rating => $_getI64(4);
+  @$pb.TagNumber(5)
+  set rating($fixnum.Int64 v) { $_setInt64(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasRating() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearRating() => clearField(5);
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  ProfileListResponse clone() => ProfileListResponse()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  ProfileListResponse copyWith(void Function(ProfileListResponse) updates) => super.copyWith((message) => updates(message as ProfileListResponse)) as ProfileListResponse;
-
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static ProfileListResponse create() => ProfileListResponse._();
-  ProfileListResponse createEmptyInstance() => create();
-  static $pb.PbList<ProfileListResponse> createRepeated() => $pb.PbList<ProfileListResponse>();
-  @$core.pragma('dart2js:noInline')
-  static ProfileListResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ProfileListResponse>(create);
-  static ProfileListResponse? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.List<ProfileResponse> get profiles => $_getList(0);
+  @$pb.TagNumber(6)
+  $fixnum.Int64 get experience => $_getI64(5);
+  @$pb.TagNumber(6)
+  set experience($fixnum.Int64 v) { $_setInt64(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasExperience() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearExperience() => clearField(6);
 }
 
 

@@ -39,18 +39,14 @@ class ProfileClient extends $grpc.Client {
       '/profile.Profile/Readyz',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $1.ReadyStatus.fromBuffer(value));
-  static final _$upsert = $grpc.ClientMethod<$3.UpsertRequest, $3.ProfileResponse>(
+  static final _$upsert = $grpc.ClientMethod<$3.UpsertRequest, $3.ProfileObject>(
       '/profile.Profile/Upsert',
       ($3.UpsertRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $3.ProfileResponse.fromBuffer(value));
-  static final _$view = $grpc.ClientMethod<$3.ViewRequest, $3.ProfileResponse>(
+      ($core.List<$core.int> value) => $3.ProfileObject.fromBuffer(value));
+  static final _$view = $grpc.ClientMethod<$3.ViewRequest, $3.ProfileObject>(
       '/profile.Profile/View',
       ($3.ViewRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $3.ProfileResponse.fromBuffer(value));
-  static final _$getAll = $grpc.ClientMethod<$0.Empty, $3.ProfileListResponse>(
-      '/profile.Profile/GetAll',
-      ($0.Empty value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $3.ProfileListResponse.fromBuffer(value));
+      ($core.List<$core.int> value) => $3.ProfileObject.fromBuffer(value));
 
   ProfileClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -74,16 +70,12 @@ class ProfileClient extends $grpc.Client {
     return $createUnaryCall(_$readyz, request, options: options);
   }
 
-  $grpc.ResponseFuture<$3.ProfileResponse> upsert($3.UpsertRequest request, {$grpc.CallOptions? options}) {
+  $grpc.ResponseFuture<$3.ProfileObject> upsert($3.UpsertRequest request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$upsert, request, options: options);
   }
 
-  $grpc.ResponseFuture<$3.ProfileResponse> view($3.ViewRequest request, {$grpc.CallOptions? options}) {
+  $grpc.ResponseFuture<$3.ProfileObject> view($3.ViewRequest request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$view, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$3.ProfileListResponse> getAll($0.Empty request, {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$getAll, request, options: options);
   }
 }
 
@@ -120,27 +112,20 @@ abstract class ProfileServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($1.ReadyStatus value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$3.UpsertRequest, $3.ProfileResponse>(
+    $addMethod($grpc.ServiceMethod<$3.UpsertRequest, $3.ProfileObject>(
         'Upsert',
         upsert_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $3.UpsertRequest.fromBuffer(value),
-        ($3.ProfileResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$3.ViewRequest, $3.ProfileResponse>(
+        ($3.ProfileObject value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$3.ViewRequest, $3.ProfileObject>(
         'View',
         view_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $3.ViewRequest.fromBuffer(value),
-        ($3.ProfileResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.Empty, $3.ProfileListResponse>(
-        'GetAll',
-        getAll_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
-        ($3.ProfileListResponse value) => value.writeToBuffer()));
+        ($3.ProfileObject value) => value.writeToBuffer()));
   }
 
   $async.Future<$1.HealthReport> health_Pre($grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
@@ -159,23 +144,18 @@ abstract class ProfileServiceBase extends $grpc.Service {
     return readyz(call, await request);
   }
 
-  $async.Future<$3.ProfileResponse> upsert_Pre($grpc.ServiceCall call, $async.Future<$3.UpsertRequest> request) async {
+  $async.Future<$3.ProfileObject> upsert_Pre($grpc.ServiceCall call, $async.Future<$3.UpsertRequest> request) async {
     return upsert(call, await request);
   }
 
-  $async.Future<$3.ProfileResponse> view_Pre($grpc.ServiceCall call, $async.Future<$3.ViewRequest> request) async {
+  $async.Future<$3.ProfileObject> view_Pre($grpc.ServiceCall call, $async.Future<$3.ViewRequest> request) async {
     return view(call, await request);
-  }
-
-  $async.Future<$3.ProfileListResponse> getAll_Pre($grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
-    return getAll(call, await request);
   }
 
   $async.Future<$1.HealthReport> health($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$1.StatusInfo> status($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$1.LiveStatus> livez($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$1.ReadyStatus> readyz($grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$3.ProfileResponse> upsert($grpc.ServiceCall call, $3.UpsertRequest request);
-  $async.Future<$3.ProfileResponse> view($grpc.ServiceCall call, $3.ViewRequest request);
-  $async.Future<$3.ProfileListResponse> getAll($grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$3.ProfileObject> upsert($grpc.ServiceCall call, $3.UpsertRequest request);
+  $async.Future<$3.ProfileObject> view($grpc.ServiceCall call, $3.ViewRequest request);
 }

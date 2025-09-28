@@ -10,6 +10,7 @@ export const config = {
   serviceShipUrl: process.env.SERVICE_SHIP_URL || 'ship:3000',
   serviceAsteroidUrl: process.env.SERVICE_ASTEROID_URL || 'asteroid:3000',
   serviceEngineUrl: process.env.SERVICE_ENGINE_URL || 'engine:3000',
+  serviceFalloutUrl: process.env.SERVICE_FALLOUT_URL || 'fallout:3000',
   rabbitHost: process.env.RABBIT_HOST || 'rabbit',
   rabbitUser: process.env.RABBIT_USER || 'user',
   rabbitPass: process.env.RABBIT_PASS || 'password',

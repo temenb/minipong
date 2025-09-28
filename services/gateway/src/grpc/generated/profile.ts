@@ -31,14 +31,13 @@ export interface ViewRequest {
   id: string;
 }
 
-export interface ProfileResponse {
+export interface ProfileObject {
   id: string;
   ownerId: string;
   nickname: string;
-}
-
-export interface ProfileListResponse {
-  profiles: ProfileResponse[];
+  level: number;
+  rating: number;
+  experience: number;
 }
 
 function createBaseUpsertRequest(): UpsertRequest {
@@ -157,12 +156,12 @@ export const ViewRequest: MessageFns<ViewRequest> = {
   },
 };
 
-function createBaseProfileResponse(): ProfileResponse {
-  return { id: "", ownerId: "", nickname: "" };
+function createBaseProfileObject(): ProfileObject {
+  return { id: "", ownerId: "", nickname: "", level: 0, rating: 0, experience: 0 };
 }
 
-export const ProfileResponse: MessageFns<ProfileResponse> = {
-  encode(message: ProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const ProfileObject: MessageFns<ProfileObject> = {
+  encode(message: ProfileObject, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -172,13 +171,22 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
     if (message.nickname !== "") {
       writer.uint32(26).string(message.nickname);
     }
+    if (message.level !== 0) {
+      writer.uint32(32).int64(message.level);
+    }
+    if (message.rating !== 0) {
+      writer.uint32(40).int64(message.rating);
+    }
+    if (message.experience !== 0) {
+      writer.uint32(48).int64(message.experience);
+    }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): ProfileResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): ProfileObject {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProfileResponse();
+    const message = createBaseProfileObject();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -206,74 +214,28 @@ export const ProfileResponse: MessageFns<ProfileResponse> = {
           message.nickname = reader.string();
           continue;
         }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ProfileResponse {
-    return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "",
-      ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
-      nickname: isSet(object.nickname) ? globalThis.String(object.nickname) : "",
-    };
-  },
-
-  toJSON(message: ProfileResponse): unknown {
-    const obj: any = {};
-    if (message.id !== "") {
-      obj.id = message.id;
-    }
-    if (message.ownerId !== "") {
-      obj.ownerId = message.ownerId;
-    }
-    if (message.nickname !== "") {
-      obj.nickname = message.nickname;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<ProfileResponse>): ProfileResponse {
-    return ProfileResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<ProfileResponse>): ProfileResponse {
-    const message = createBaseProfileResponse();
-    message.id = object.id ?? "";
-    message.ownerId = object.ownerId ?? "";
-    message.nickname = object.nickname ?? "";
-    return message;
-  },
-};
-
-function createBaseProfileListResponse(): ProfileListResponse {
-  return { profiles: [] };
-}
-
-export const ProfileListResponse: MessageFns<ProfileListResponse> = {
-  encode(message: ProfileListResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    for (const v of message.profiles) {
-      ProfileResponse.encode(v!, writer.uint32(10).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): ProfileListResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProfileListResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
+        case 4: {
+          if (tag !== 32) {
             break;
           }
 
-          message.profiles.push(ProfileResponse.decode(reader, reader.uint32()));
+          message.level = longToNumber(reader.int64());
+          continue;
+        }
+        case 5: {
+          if (tag !== 40) {
+            break;
+          }
+
+          message.rating = longToNumber(reader.int64());
+          continue;
+        }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.experience = longToNumber(reader.int64());
           continue;
         }
       }
@@ -285,28 +247,51 @@ export const ProfileListResponse: MessageFns<ProfileListResponse> = {
     return message;
   },
 
-  fromJSON(object: any): ProfileListResponse {
+  fromJSON(object: any): ProfileObject {
     return {
-      profiles: globalThis.Array.isArray(object?.profiles)
-        ? object.profiles.map((e: any) => ProfileResponse.fromJSON(e))
-        : [],
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
+      nickname: isSet(object.nickname) ? globalThis.String(object.nickname) : "",
+      level: isSet(object.level) ? globalThis.Number(object.level) : 0,
+      rating: isSet(object.rating) ? globalThis.Number(object.rating) : 0,
+      experience: isSet(object.experience) ? globalThis.Number(object.experience) : 0,
     };
   },
 
-  toJSON(message: ProfileListResponse): unknown {
+  toJSON(message: ProfileObject): unknown {
     const obj: any = {};
-    if (message.profiles?.length) {
-      obj.profiles = message.profiles.map((e) => ProfileResponse.toJSON(e));
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.ownerId !== "") {
+      obj.ownerId = message.ownerId;
+    }
+    if (message.nickname !== "") {
+      obj.nickname = message.nickname;
+    }
+    if (message.level !== 0) {
+      obj.level = Math.round(message.level);
+    }
+    if (message.rating !== 0) {
+      obj.rating = Math.round(message.rating);
+    }
+    if (message.experience !== 0) {
+      obj.experience = Math.round(message.experience);
     }
     return obj;
   },
 
-  create(base?: DeepPartial<ProfileListResponse>): ProfileListResponse {
-    return ProfileListResponse.fromPartial(base ?? {});
+  create(base?: DeepPartial<ProfileObject>): ProfileObject {
+    return ProfileObject.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<ProfileListResponse>): ProfileListResponse {
-    const message = createBaseProfileListResponse();
-    message.profiles = object.profiles?.map((e) => ProfileResponse.fromPartial(e)) || [];
+  fromPartial(object: DeepPartial<ProfileObject>): ProfileObject {
+    const message = createBaseProfileObject();
+    message.id = object.id ?? "";
+    message.ownerId = object.ownerId ?? "";
+    message.nickname = object.nickname ?? "";
+    message.level = object.level ?? 0;
+    message.rating = object.rating ?? 0;
+    message.experience = object.experience ?? 0;
     return message;
   },
 };
@@ -355,8 +340,8 @@ export const ProfileService = {
     responseStream: false,
     requestSerialize: (value: UpsertRequest): Buffer => Buffer.from(UpsertRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): UpsertRequest => UpsertRequest.decode(value),
-    responseSerialize: (value: ProfileResponse): Buffer => Buffer.from(ProfileResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileResponse => ProfileResponse.decode(value),
+    responseSerialize: (value: ProfileObject): Buffer => Buffer.from(ProfileObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ProfileObject => ProfileObject.decode(value),
   },
   view: {
     path: "/profile.Profile/View",
@@ -364,17 +349,8 @@ export const ProfileService = {
     responseStream: false,
     requestSerialize: (value: ViewRequest): Buffer => Buffer.from(ViewRequest.encode(value).finish()),
     requestDeserialize: (value: Buffer): ViewRequest => ViewRequest.decode(value),
-    responseSerialize: (value: ProfileResponse): Buffer => Buffer.from(ProfileResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileResponse => ProfileResponse.decode(value),
-  },
-  getAll: {
-    path: "/profile.Profile/GetAll",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: ProfileListResponse): Buffer => Buffer.from(ProfileListResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileListResponse => ProfileListResponse.decode(value),
+    responseSerialize: (value: ProfileObject): Buffer => Buffer.from(ProfileObject.encode(value).finish()),
+    responseDeserialize: (value: Buffer): ProfileObject => ProfileObject.decode(value),
   },
 } as const;
 
@@ -383,9 +359,8 @@ export interface ProfileServer extends UntypedServiceImplementation {
   status: handleUnaryCall<Empty, StatusInfo>;
   livez: handleUnaryCall<Empty, LiveStatus>;
   readyz: handleUnaryCall<Empty, ReadyStatus>;
-  upsert: handleUnaryCall<UpsertRequest, ProfileResponse>;
-  view: handleUnaryCall<ViewRequest, ProfileResponse>;
-  getAll: handleUnaryCall<Empty, ProfileListResponse>;
+  upsert: handleUnaryCall<UpsertRequest, ProfileObject>;
+  view: handleUnaryCall<ViewRequest, ProfileObject>;
 }
 
 export interface ProfileClient extends Client {
@@ -439,48 +414,30 @@ export interface ProfileClient extends Client {
   ): ClientUnaryCall;
   upsert(
     request: UpsertRequest,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
   upsert(
     request: UpsertRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
   upsert(
     request: UpsertRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
-  view(
-    request: ViewRequest,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
+  view(request: ViewRequest, callback: (error: ServiceError | null, response: ProfileObject) => void): ClientUnaryCall;
   view(
     request: ViewRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
   view(
     request: ViewRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  getAll(
-    request: Empty,
-    callback: (error: ServiceError | null, response: ProfileListResponse) => void,
-  ): ClientUnaryCall;
-  getAll(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileListResponse) => void,
-  ): ClientUnaryCall;
-  getAll(
-    request: Empty,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileListResponse) => void,
+    callback: (error: ServiceError | null, response: ProfileObject) => void,
   ): ClientUnaryCall;
 }
 
@@ -497,6 +454,17 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(int64: { toString(): string }): number {
+  const num = globalThis.Number(int64.toString());
+  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return num;
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

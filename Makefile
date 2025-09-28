@@ -9,6 +9,11 @@ PROTO_FILES := $(shell find proto -name '*.proto')
 NODE_PROTO_PATH=./src/grpc/generated
 FLUTTER_PROTO_PATH=./lib/src/grpc/generated
 
+up:
+	@echo "🚀 Запуск docker compose (поднимаем все сервисы)..."
+	@docker compose up -d
+	@echo "✅ Сервисы запущены!"
+
 install:
 	@echo "🔧 Инициализация проекта"
 	@echo "📦 Проверка .env файлов для всех сервисов..."
@@ -21,20 +26,21 @@ install:
 		fi; \
 	done
 	@echo "📦 Установка зависимостей в корне монорепо..."
-	pnpm install
+	@pnpm install > /dev/null 2>&1
 	@echo "📦 Установка зависимостей для всех сервисов..."
-	make proto-generate
+	@make proto-generate > /dev/null 2>&1
 	@echo "🚀 Запуск docker compose (поднимаем все сервисы)..."
-	docker compose up -d
+	@docker compose up -d > /dev/null 2>&1
 	@echo "⏳ Ожидание запуска контейнеров (10 секунд)..."
-	sleep 10
-	@echo "🔍 Генерация Prisma клиентов для всех сервисов..."
-	make prisma-generate
-	@echo "🚀 Применение миграций Prisma для всех сервисов..."
-	make prisma-migrate
-	@echo "🌱 Запуск сидов для всех сервисов..."
-	make seed
-	@echo "👤 Создание админа через gateway..."
+	@sleep 10
+	@echo '🚀 Generating Prisma clients...'
+	@make prisma-generate > /dev/null 2>&1
+	@echo '🚀 Apply migrations...'
+	@make prisma-migrate > /dev/null 2>&1
+	@make seed
+	@echo "🛑 Остановка docker compose (выключаем все сервисы)..."
+	@docker compose down > /dev/null 2>&1
+	@echo "✅ Инициализация завершена!"
 
 prisma-migrate:
 	@echo '🚀 Apply migrations...'
@@ -57,7 +63,13 @@ seed:
 		docker compose exec -T -w /usr/src/app/services/$$service $$service npx ts-node src/seed/seed.ts; \
     done
 
-commit-all:
+git-commit-and-push-all:
+	@echo "🚀 Commit all repos..."
+	@meke commit-all
+	@echo "🚀 Push all repos..."
+	@make push-all
+
+git-commit-all:
 	@for dir in $(GIT_SERVICES); do \
 		echo "\033[1;33m[*] Checking $$dir...\033[0m"; \
 		SERVICE_PATH="$(SERVICE_DIR)/$$dir"; \
@@ -69,39 +81,41 @@ commit-all:
 		if git diff --quiet; then \
 			echo "\033[1;33m[-] No changes in $$dir\033[0m"; \
 		else \
-			if [ "$(DRY_RUN)" = "true" ]; then \
-				echo "\033[0;32m[DRY-RUN] Would commit changes in $$dir\033[0m"; \
-			else \
-				git add . && \
-				git commit -am "$(COMMIT_MSG)" && \
-				echo "git commit -am \"$(COMMIT_MSG)\"" && \
-				if git push; then \
-					echo "\033[0;32m[✓] Committed changes in $$dir\033[0m"; \
-				else \
-					echo "\033[0;31m[✗] Failed to push $$dir\033[0m"; \
-				fi; \
-			fi; \
+			git add . && \
+			git commit -am "$(COMMIT_MSG)" && \
+			echo "git commit -am \"$(COMMIT_MSG)\""; \
 		fi; \
 		cd - > /dev/null; \
-    done
+	done
 
-	@echo "\033[1;33m[*] Checking monorepo...\033[0m"
+	@echo "\033[1;33m[*] Checking monorepo...\033[0m"; \
 	if git diff --quiet; then \
 		echo "\033[1;33m[-] No changes in monorepo\033[0m"; \
 	else \
-		if [ "$(DRY_RUN)" = "true" ]; then \
-			echo "\033[0;32m[DRY-RUN] Would commit changes in monorepo\033[0m"; \
-		else \
-			git add . && \
-			git commit -am "$(COMMIT_MSG)" && \
-			echo "git commit -am \"$(COMMIT_MSG)\"" && \
-			if git push; then \
-				echo "\033[0;32m[✓] Committed changes in monorepo\033[0m"; \
-			else \
-				echo "\033[0;31m[✗] Failed to push monorepo\033[0m"; \
-			fi; \
-		fi; \
+		git add . && \
+		git commit -am "$(COMMIT_MSG)" && \
+		echo "git commit -am \"$(COMMIT_MSG)\""; \
 	fi;
+
+git-push-all:
+	@for dir in $(GIT_SERVICES); do \
+		echo "\033[1;34m[*] Pushing $$dir...\033[0m"; \
+		SERVICE_PATH="$(SERVICE_DIR)/$$dir"; \
+		cd "$$SERVICE_PATH"; \
+		if git push; then \
+			echo "\033[0;32m[✓] Pushed $$dir\033[0m"; \
+		else \
+			echo "\033[0;31m[✗] Failed to push $$dir\033[0m"; \
+		fi; \
+		cd - > /dev/null; \
+	done
+
+	@echo "\033[1;34m[*] Pushing monorepo...\033[0m"
+	if git push; then \
+		echo "\033[0;32m[✓] Pushed monorepo\033[0m"; \
+	else \
+		echo "\033[0;31m[✗] Failed to push monorepo\033[0m"; \
+	fi; \
 
 proto-generate:
 	@echo '🚀 Proto generate...'

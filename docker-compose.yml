@@ -18,25 +18,6 @@ services:
       retries: 5
       start_period: 10s
 
-#  mongo:
-#    container_name: minipong-mongo
-#    image: mongo:8
-#    restart: always
-#    ports:
-#      - "27017:27017"
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: mongo
-#      MONGO_INITDB_ROOT_PASSWORD: mongo
-#      MONGO_INITDB_DATABASE: minipong
-#    volumes:
-#      - mongo_data:/data/db
-#    healthcheck:
-#      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 10s
-
   gateway:
     container_name: minipong-gateway
     build:
@@ -110,20 +91,20 @@ services:
       - ./services/engine/package.json:/usr/src/app/services/engine/package.json
     command: pnpm dlx turbo run dev --parallel
 
-#  mail:
-#    container_name: minipong-mail
-#    build:
-#      context: .
-#      dockerfile: services/mail/Dockerfile
-#    env_file:
-#      - services/mail/.env
-#    volumes:
-#      - ./services/mail/:/usr/src/app/
-#      - /usr/src/app/node_modules
-#    command: pnpm dlx turbo run dev --parallel
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
+  fallout:
+    container_name: minipong-fallout
+    build:
+      context: .
+      dockerfile: services/fallout/Dockerfile
+    env_file:
+      - services/fallout/.env
+    volumes:
+      - ./shared/logger/src:/usr/src/app/shared/logger/src
+      - ./shared/kafka/src:/usr/src/app/shared/kafka/src
+      - ./shared/gprc-client-manager/src:/usr/src/app/shared/gprc-client-manager/src
+      - ./services/fallout/src:/usr/src/app/services/fallout/src/
+      - ./services/fallout/package.json:/usr/src/app/services/fallout/package.json
+    command: pnpm dlx turbo run dev --parallel
 
   kafka:
     container_name: minipong-kafka
@@ -149,6 +130,40 @@ services:
       timeout: 5s
       retries: 5
 
+#  mongo:
+#    container_name: minipong-mongo
+#    image: mongo:8
+#    restart: always
+#    ports:
+#      - "27017:27017"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: mongo
+#      MONGO_INITDB_ROOT_PASSWORD: mongo
+#      MONGO_INITDB_DATABASE: minipong
+#    volumes:
+#      - mongo_data:/data/db
+#    healthcheck:
+#      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 10s
+#
+#  mail:
+#    container_name: minipong-mail
+#    build:
+#      context: .
+#      dockerfile: services/mail/Dockerfile
+#    env_file:
+#      - services/mail/.env
+#    volumes:
+#      - ./services/mail/:/usr/src/app/
+#      - /usr/src/app/node_modules
+#    command: pnpm dlx turbo run dev --parallel
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#
 #  mailpit:
 #    image: axllent/mailpit
 #    container_name: minipong-mailpit

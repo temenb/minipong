@@ -29,28 +29,28 @@ export const readyz = (): Promise<HealthGrpc.ReadyStatus | null> => {
   return authManager.call((client, cb) => client.readyz(grpcRequest, cb));
 };
 
-export const register = (email: string, password: string): Promise<AuthGrpc.AuthResponse | null> => {
+export const register = (email: string, password: string): Promise<AuthGrpc.AuthObject | null> => {
   const grpcRequest: AuthGrpc.RegisterRequest = {email, password};
   return authManager.call((client, cb) => client.register(grpcRequest, cb));
 };
 
-export const anonymousSignIn = (deviceId: string): Promise<AuthGrpc.AuthResponse | null> => {
+export const anonymousSignIn = (deviceId: string): Promise<AuthGrpc.AuthObject | null> => {
   const grpcRequest: AuthGrpc.AnonymousSignInRequest = {deviceId};
   return authManager.call((client, cb) => client.anonymousSignIn(grpcRequest, cb));
 };
 
-export const login = (email: string, password: string): Promise<AuthGrpc.AuthResponse | null> => {
+export const login = (email: string, password: string): Promise<AuthGrpc.AuthObject | null> => {
   const grpcRequest: AuthGrpc.LoginRequest = {email, password};
   return authManager.call((client, cb) => client.login(grpcRequest, cb));
 };
 
-export const refreshTokens = (token: string): Promise<AuthGrpc.AuthResponse | null> => {
+export const refreshTokens = (token: string): Promise<AuthGrpc.AuthObject | null> => {
   const grpcRequest: AuthGrpc.RefreshTokensRequest = {token};
   return authManager.call((client, cb) => client.refreshTokens(grpcRequest, cb));
 };
 
-export const logout = (id: string): Promise<AuthGrpc.LogoutResponse | null> => {
-  const grpcRequest: AuthGrpc.LogoutRequest = {id};
+export const logout = (userId: string): Promise<AuthGrpc.LogoutResponse | null> => {
+  const grpcRequest: AuthGrpc.LogoutRequest = {userId};
   return authManager.call((client, cb) => client.logout(grpcRequest, cb));
 };
 
@@ -59,7 +59,7 @@ export const forgotPassword = (email: string): Promise<EmptyGrpc.Empty | null> =
   return authManager.call((client, cb) => client.forgotPassword(grpcRequest, cb));
 };
 
-export const resetPassword = (token: string, newPassword: string): Promise<AuthGrpc.AuthResponse | null> => {
+export const resetPassword = (token: string, newPassword: string): Promise<AuthGrpc.AuthObject | null> => {
   const grpcRequest: AuthGrpc.ResetPasswordRequest = {token, newPassword};
   return authManager.call((client, cb) => client.resetPassword(grpcRequest, cb));
 };

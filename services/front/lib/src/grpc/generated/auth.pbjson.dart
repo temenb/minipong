@@ -27,20 +27,20 @@ final $typed_data.Uint8List registerRequestDescriptor = $convert.base64Decode(
     'Cg9SZWdpc3RlclJlcXVlc3QSFAoFZW1haWwYASABKAlSBWVtYWlsEhoKCHBhc3N3b3JkGAIgAS'
     'gJUghwYXNzd29yZA==');
 
-@$core.Deprecated('Use authResponseDescriptor instead')
-const AuthResponse$json = {
-  '1': 'AuthResponse',
+@$core.Deprecated('Use authObjectDescriptor instead')
+const AuthObject$json = {
+  '1': 'AuthObject',
   '2': [
     {'1': 'access_token', '3': 1, '4': 1, '5': 9, '10': 'accessToken'},
     {'1': 'refresh_token', '3': 2, '4': 1, '5': 9, '10': 'refreshToken'},
-    {'1': 'id', '3': 3, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'user_id', '3': 3, '4': 1, '5': 9, '10': 'userId'},
   ],
 };
 
-/// Descriptor for `AuthResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List authResponseDescriptor = $convert.base64Decode(
-    'CgxBdXRoUmVzcG9uc2USIQoMYWNjZXNzX3Rva2VuGAEgASgJUgthY2Nlc3NUb2tlbhIjCg1yZW'
-    'ZyZXNoX3Rva2VuGAIgASgJUgxyZWZyZXNoVG9rZW4SDgoCaWQYAyABKAlSAmlk');
+/// Descriptor for `AuthObject`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List authObjectDescriptor = $convert.base64Decode(
+    'CgpBdXRoT2JqZWN0EiEKDGFjY2Vzc190b2tlbhgBIAEoCVILYWNjZXNzVG9rZW4SIwoNcmVmcm'
+    'VzaF90b2tlbhgCIAEoCVIMcmVmcmVzaFRva2VuEhcKB3VzZXJfaWQYAyABKAlSBnVzZXJJZA==');
 
 @$core.Deprecated('Use loginRequestDescriptor instead')
 const LoginRequest$json = {
@@ -72,13 +72,13 @@ final $typed_data.Uint8List refreshTokensRequestDescriptor = $convert.base64Deco
 const LogoutRequest$json = {
   '1': 'LogoutRequest',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
   ],
 };
 
 /// Descriptor for `LogoutRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List logoutRequestDescriptor = $convert.base64Decode(
-    'Cg1Mb2dvdXRSZXF1ZXN0Eg4KAmlkGAEgASgJUgJpZA==');
+    'Cg1Mb2dvdXRSZXF1ZXN0EhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZA==');
 
 @$core.Deprecated('Use logoutResponseDescriptor instead')
 const LogoutResponse$json = {

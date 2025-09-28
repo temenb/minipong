@@ -77,11 +77,11 @@ class RegisterRequest extends $pb.GeneratedMessage {
   void clearPassword() => clearField(2);
 }
 
-class AuthResponse extends $pb.GeneratedMessage {
-  factory AuthResponse({
+class AuthObject extends $pb.GeneratedMessage {
+  factory AuthObject({
     $core.String? accessToken,
     $core.String? refreshToken,
-    $core.String? id,
+    $core.String? userId,
   }) {
     final $result = create();
     if (accessToken != null) {
@@ -90,19 +90,19 @@ class AuthResponse extends $pb.GeneratedMessage {
     if (refreshToken != null) {
       $result.refreshToken = refreshToken;
     }
-    if (id != null) {
-      $result.id = id;
+    if (userId != null) {
+      $result.userId = userId;
     }
     return $result;
   }
-  AuthResponse._() : super();
-  factory AuthResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AuthResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  AuthObject._() : super();
+  factory AuthObject.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AuthObject.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AuthResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'auth'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AuthObject', package: const $pb.PackageName(_omitMessageNames ? '' : 'auth'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'accessToken')
     ..aOS(2, _omitFieldNames ? '' : 'refreshToken')
-    ..aOS(3, _omitFieldNames ? '' : 'id')
+    ..aOS(3, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false
   ;
 
@@ -110,22 +110,22 @@ class AuthResponse extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  AuthResponse clone() => AuthResponse()..mergeFromMessage(this);
+  AuthObject clone() => AuthObject()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  AuthResponse copyWith(void Function(AuthResponse) updates) => super.copyWith((message) => updates(message as AuthResponse)) as AuthResponse;
+  AuthObject copyWith(void Function(AuthObject) updates) => super.copyWith((message) => updates(message as AuthObject)) as AuthObject;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static AuthResponse create() => AuthResponse._();
-  AuthResponse createEmptyInstance() => create();
-  static $pb.PbList<AuthResponse> createRepeated() => $pb.PbList<AuthResponse>();
+  static AuthObject create() => AuthObject._();
+  AuthObject createEmptyInstance() => create();
+  static $pb.PbList<AuthObject> createRepeated() => $pb.PbList<AuthObject>();
   @$core.pragma('dart2js:noInline')
-  static AuthResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AuthResponse>(create);
-  static AuthResponse? _defaultInstance;
+  static AuthObject getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AuthObject>(create);
+  static AuthObject? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get accessToken => $_getSZ(0);
@@ -146,13 +146,13 @@ class AuthResponse extends $pb.GeneratedMessage {
   void clearRefreshToken() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get id => $_getSZ(2);
+  $core.String get userId => $_getSZ(2);
   @$pb.TagNumber(3)
-  set id($core.String v) { $_setString(2, v); }
+  set userId($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasId() => $_has(2);
+  $core.bool hasUserId() => $_has(2);
   @$pb.TagNumber(3)
-  void clearId() => clearField(3);
+  void clearUserId() => clearField(3);
 }
 
 class LoginRequest extends $pb.GeneratedMessage {
@@ -271,11 +271,11 @@ class RefreshTokensRequest extends $pb.GeneratedMessage {
 
 class LogoutRequest extends $pb.GeneratedMessage {
   factory LogoutRequest({
-    $core.String? id,
+    $core.String? userId,
   }) {
     final $result = create();
-    if (id != null) {
-      $result.id = id;
+    if (userId != null) {
+      $result.userId = userId;
     }
     return $result;
   }
@@ -284,7 +284,7 @@ class LogoutRequest extends $pb.GeneratedMessage {
   factory LogoutRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'LogoutRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'auth'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false
   ;
 
@@ -310,13 +310,13 @@ class LogoutRequest extends $pb.GeneratedMessage {
   static LogoutRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.String get userId => $_getSZ(0);
   @$pb.TagNumber(1)
-  set id($core.String v) { $_setString(0, v); }
+  set userId($core.String v) { $_setString(0, v); }
   @$pb.TagNumber(1)
-  $core.bool hasId() => $_has(0);
+  $core.bool hasUserId() => $_has(0);
   @$pb.TagNumber(1)
-  void clearId() => clearField(1);
+  void clearUserId() => clearField(1);
 }
 
 class LogoutResponse extends $pb.GeneratedMessage {
