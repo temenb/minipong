@@ -30,7 +30,7 @@ git-commit-all:
 #	done
 
 
-	@#echo "\033[1;33m[*] Checking monorepo...\033[0m"; \
+	@echo "\033[1;33m[*] Checking monorepo...\033[0m"; \
 	cd "$(BASE_DIR)"; \
 	if git diff --quiet; then \
 		echo "\033[1;33m[-] No changes in monorepo\033[0m"; \
