@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1011044035242:android:0f9f09932f1106ca6b3ed3",
+        "mobilesdk_app_id": "1:1011044035242:android:e68bf506bbe0216b6b3ed3",
         "android_client_info": {
-          "package_name": "com.example.front"
+          "package_name": "com.minipong.front"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1011044035242-rhvm0v8hbh26ct2k7eve7kb2ohj0auvo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.minipong.front",
+            "certificate_hash": "3c0a8feaaa92d68c25961e8fa5d26758925d2fad"
+          }
+        },
+        {
+          "client_id": "1011044035242-tpencr4a0eh5uh1dl0biaft74g32hnpv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCwag02bDTaYtY7aBe1YmGo3rt-FE32oBM"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011044035242-tpencr4a0eh5uh1dl0biaft74g32hnpv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

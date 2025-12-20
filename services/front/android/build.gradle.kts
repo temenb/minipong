@@ -1,6 +1,6 @@
 plugins {
-    // подключаем Google Services плагин в Kotlin DSL
-    id("com.google.gms.google-services") version "4.4.0" apply false
+    // Подключаем Google Services плагин (только объявляем, без применения)
+    id("com.google.gms.google-services") version "4.4.4" apply false
 }
 
 allprojects {
@@ -10,6 +10,7 @@ allprojects {
     }
 }
 
+// Настройка кастомной директории для сборки
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")
@@ -20,6 +21,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }
