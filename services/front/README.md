@@ -1,30 +1,16 @@
-## Запуск
+# front
 
-1. Установите [Flutter](https://flutter.dev/docs/get-started/install).
-2. Клонируйте репозиторий:
-   ```
-   git clone <адрес репозитория>
-   ```
-3. Перейдите в папку проекта:
-   ```
-   cd minipong
-   ```
-4. Запустите приложение:
-   ```
-   flutter run
-   ```
+A new Flutter project.
 
-## Структура
+## Getting Started
 
-- `lib/main.dart` — основной код приложения
-- `lib/game_rules.dart` — логика игры (если используется)
-- `README.md` — описание проекта
+This project is a starting point for a Flutter application.
 
-## Горячие клавиши
+A few resources to get you started if this is your first Flutter project:
 
-- **Ctrl** или **Пробел** — добавить гол левому игроку
-- **Enter** — добавить гол правому игроку
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-## Лицензия
-
-MIT
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
