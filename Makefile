@@ -14,8 +14,14 @@ up:
 	@docker compose up -d
 	@echo "✅ Сервисы запущены!"
 
-install:
-	@echo "🔧 Инициализация проекта"
+init:
+	$(call banner,"🔧 Initializing project...")
+	@if [ -z "$$(ls -A services/back 2>/dev/null)" ]; then \
+		echo "🔄 Initializing submodules..."; \
+		git submodule update --init --recursive; \
+	else \
+		echo "✅ Submodules already initialized"; \
+	fi
 	@echo "📦 Проверка .env файлов для всех сервисов..."
 	@for service in $(NODE_SERVICES) $(FLUTTER_SERVICES); do \
 		ENV_PATH="$(SERVICE_DIR)/$$service/.env"; \
@@ -178,3 +184,14 @@ kafka-user-created-list:
 #test:
 #	@echo "🧪 Запуск тестов"
 #	npx turbo run test
+
+
+
+define banner
+	@echo ""
+	@echo "========================================"
+	@echo " $1 "
+	@echo "========================================"
+	@echo ""
+endef
+
