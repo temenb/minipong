@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1011044035242",
+    "project_id": "minipong",
+    "storage_bucket": "minipong.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011044035242:android:0f9f09932f1106ca6b3ed3",
+        "android_client_info": {
+          "package_name": "com.example.front"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwag02bDTaYtY7aBe1YmGo3rt-FE32oBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
