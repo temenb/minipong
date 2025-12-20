@@ -13,6 +13,17 @@
 
 ## Установка и запуск из монорепозитория
 
+1. Установите flutter:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install curl git unzip xz-utils zip libglu1-mesa
+   git clone https://github.com/flutter/flutter.git -b stable ~/flutter
+   echo 'export PATH="$PATH:$HOME/flutter/bin"' >> ~/.zshrc
+   flutter --version
+   echo 'export PATH="$PATH":"$HOME/.pub-cache/bin"' >> ~/.zshrc
+   dart pub global activate protoc_plugin
+   ```
+
 1. Установите [pnpm](https://pnpm.io/):
    ```bash
    npm install -g pnpm

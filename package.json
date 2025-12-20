@@ -1,5 +1,5 @@
 {
-  "name": "game",
+  "name": "minipong",
   "version": "1.0.0",
   "main": "dist/server.js",
   "devDependencies": {

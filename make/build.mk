@@ -23,6 +23,12 @@ init:
 			cp "$$ENV_EXAMPLE_PATH" "$$ENV_PATH"; \
 		fi; \
 	done
+	@echo "📦 Создание директорий..."
+	@if [ ! -d "$(BASE_DIR)/$(SERVICE_DIR)/kafka/log" ]; then \
+		mkdir $(BASE_DIR)/$(SERVICE_DIR)/kafka/log; \
+	fi
+	sudo chmod 0777 -R $(BASE_DIR)/$(SERVICE_DIR)/kafka/log
+
 	@echo "📦 Установка зависимостей в корне монорепо..."
 	@pnpm install > /dev/null 2>&1
 	@echo "📦 Установка зависимостей для всех сервисов..."

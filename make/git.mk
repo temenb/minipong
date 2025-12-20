@@ -8,26 +8,25 @@ git-commit-and-push-all:
 	@make push-all
 
 git-commit-all:
-	@#for dir in $(GIT_SERVICES); do \
-#		echo "\033[1;33m[*] Checking $$dir...\033[0m"; \
-#		SERVICE_PATH="$(BASE_DIR)/$(SERVICE_DIR)/$$dir"; \
-##		echo $$SERVICE_PATH; \
-#		cd "$$SERVICE_PATH"; \
-#		if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
-#			echo "\033[0;31m[!] Skipping $$dir — invalid git repo\033[0m"; \
-#			cd - >/dev/null; \
-#			continue; \
-#		fi; \
-#		if [ -z "$$(git status --porcelain)" ]; then \
-#			echo "\033[1;33m[-] No changes in $$dir\033[0m"; \
-#		else \
-#			echo "\033[1;32m[+] Committing changes in $$dir...\033[0m"; \
-#			git add . && \
-#			git commit -m "$(COMMIT_MSG)" && \
-#			echo "git commit -m \"$(COMMIT_MSG)\""; \
-#		fi; \
-#		cd - >/dev/null; \
-#	done
+	@for dir in $(GIT_SERVICES); do \
+		echo "\033[1;33m[*] Checking $$dir...\033[0m"; \
+		SERVICE_PATH="$(BASE_DIR)/$(SERVICE_DIR)/$$dir"; \
+		cd "$$SERVICE_PATH"; \
+		if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
+			echo "\033[0;31m[!] Skipping $$dir — invalid git repo\033[0m"; \
+			cd - >/dev/null; \
+			continue; \
+		fi; \
+		if [ -z "$$(git status --porcelain)" ]; then \
+			echo "\033[1;33m[-] No changes in $$dir\033[0m"; \
+		else \
+			echo "\033[1;32m[+] Committing changes in $$dir...\033[0m"; \
+			git add . && \
+			git commit -m "$(COMMIT_MSG)" && \
+			echo "git commit -m \"$(COMMIT_MSG)\""; \
+		fi; \
+		cd - >/dev/null; \
+	done
 
 
 	@echo "\033[1;33m[*] Checking monorepo...\033[0m"; \
