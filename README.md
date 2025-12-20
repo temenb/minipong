@@ -49,4 +49,30 @@
    flutter pub get
    flutter run
    
+   adb devices   
+   ```
+   Скачай именно Command-line Tools (CLI)
+
+Перейди на официальный сайт Android Studio.
+https://developer.android.com/studio?utm_source=copilot.com&hl=ru#command-tools
+
+
+mkdir -p ~/Android/Sdk/cmdline-tools
+mkdir -p ~/Android/Sdk/platform-tools
+mkdir -p ~/Android/Sdk/build-tools
+mkdir -p ~/Android/Sdk/ndk
+
+~/Android/cmdline-tools/latest
+
+Пропиши переменные окружения  
+В ~/.zshrc добавь:
+
+bash
+echo 'export ANDROID_HOME=$HOME/Android/Sdk' >> ~/.zshrc
+echo 'export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin' >> ~/.zshrc
+echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools' >> ~/.zshrc
+
+source ~/.zshrc
+
+yes | sdkmanager --licenses
 
